@@ -15,7 +15,6 @@ const NotFound = () => {
         </h1>
         <p className="text-destructive">Could Not Find Page</p>
         <button
-        variant="outline"
         className="mt-4 ml-2 cursor-pointer" onClick={()=> router.back()}>
             <ArrowBigLeft />
         </button>
