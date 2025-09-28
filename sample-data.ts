@@ -6,7 +6,7 @@ const sampleData = {
       category: "Men's Dress Shirts",
       description: 'Classic Polo style with modern comfort',
       images: [
-        '/images/sample-products/p1-1.jpg',
+        '/images/sample-products/p11-1.jpg',
         '/images/sample-products/p1-2.jpg',
       ],
       price: 59.99,
@@ -23,7 +23,7 @@ const sampleData = {
       category: "Men's Dress Shirts",
       description: 'Timeless style and premium comfort',
       images: [
-        '/images/sample-products/p2-1.jpg',
+        '/images/sample-products/p8-1.jpg',
         '/images/sample-products/p2-2.jpg',
       ],
       price: 85.9,
@@ -40,7 +40,7 @@ const sampleData = {
       category: "Men's Dress Shirts",
       description: 'A perfect blend of sophistication and comfort',
       images: [
-        '/images/sample-products/p3-1.jpg',
+        '/images/sample-products/p9-1.jpg',
         '/images/sample-products/p3-2.jpg',
       ],
       price: 99.95,
@@ -57,7 +57,7 @@ const sampleData = {
       category: "Men's Dress Shirts",
       description: 'Streamlined design with flexible stretch fabric',
       images: [
-        '/images/sample-products/p4-1.jpg',
+        '/images/sample-products/p10-1.jpg',
         '/images/sample-products/p4-2.jpg',
       ],
       price: 39.95,
