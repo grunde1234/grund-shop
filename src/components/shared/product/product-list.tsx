@@ -6,9 +6,10 @@
   imageUrl?: string
 } */
 import ProductCard from "@/components/shared/product/product-card"
+import {Product} from '@/Zod-schemas/index'
 
 type Props = {
-  data: any,
+  data: Product[],
   title?: string,
   limit?: number 
 }
@@ -22,10 +23,8 @@ const ProductList = ({data, title, limit}: Props) => {
         </h2>
         {data.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {limitedData.map((product) => (
-                    <ProductCard key={product.slug} product={product}>
-                        {product.name}
-                    </ProductCard>
+                {limitedData.map((product: Product) => (
+                    <ProductCard key={product.slug} product={product} />
                 ))}
             </div>
         ) : (<div>

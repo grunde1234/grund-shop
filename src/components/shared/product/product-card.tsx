@@ -5,11 +5,12 @@ import { Card,
   CardHeader,
  } from "@/components/ui/card"
  import ProductPrice from "./product-price"
+ import {Product} from '@/Zod-schemas/index'
 
 type Props ={
-    product: any
+    product: Product,
 }
-const ProductCard = ({product}: props) => {
+const ProductCard = ({product}: Props) => {
   return (
     <Card className="w-full max-w-sm">
     <CardHeader className="p-0 items-center">
