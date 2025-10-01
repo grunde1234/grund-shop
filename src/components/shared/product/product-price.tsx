@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 type Props = {
     value: number,
-    className: string
+    className?: string
 }
 const ProductPrice = ({value, className}: Props) => {
      //Ensure two decimal places

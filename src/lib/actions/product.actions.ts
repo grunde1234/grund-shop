@@ -15,5 +15,12 @@ export async function getLatestProducts(){/* generate then migrate then use seed
         }
     })
 
-    return convertToPlainObject(data)
+    return convertToPlainObject(data) //gives out a typescript object and not a js so it needs to be converted to normal js object
+}
+
+//get single data by the slug
+export async function getProductBySlug(slug: string){
+    return await prisma.product.findFirst({
+        where: {slug: slug}
+    })
 }
