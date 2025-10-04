@@ -27,3 +27,4 @@ export const prisma = new PrismaClient({ adapter }).$extends({
     },
   },
 });
+//this handles connection pooling for serverless environments

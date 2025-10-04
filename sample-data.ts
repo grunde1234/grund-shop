@@ -1,5 +1,21 @@
+import {hashSync} from 'bcrypt-ts-edge';
+
 const sampleData = {
-  products: [
+  users: [/* for users one a regular user the other an admin user */
+    {
+      name: 'John',
+      email: 'admin@example.com',
+      password: hashSync('123456' , 10),//a salt a random value added to the password before hashing to make it more secure so even with same passwords the hashed output is completely different
+      role: 'admin'
+    },
+    {
+      name: 'Jane',
+      email: 'user@example.com',
+      password: hashSync('123456' , 10),//a salt a random value added to the password before hashing to make it more secure so even with same passwords the hashed output is completely different
+      role: 'user'
+    }
+  ]
+  ,products: [
     {
       name: 'Polo Sporting Stretch Shirt',
       slug: 'polo-sporting-stretch-shirt',
