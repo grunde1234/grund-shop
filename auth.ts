@@ -7,7 +7,7 @@ import type { NextAuthConfig } from 'next-auth';
 
 export const config: NextAuthConfig = {
     pages:{
-  signIn: '/signin',
+  signIn: '/sign-in',
   /* signOut: '/auth/signout', */
   error: '/sign-in', // Error code passed in query string as ?error=
   /* verifyRequest: '/auth/verify-request', */ // (used for check email message)
