@@ -24,26 +24,24 @@ export const config: NextAuthConfig = {
                 email: {label: "Email", type: "text", placeholder: "Email"},
                 password: {label: "Password", type: "password", placeholder: "Password"}
             },
-            async authorize(credentials){//credentials is the object that contains the email and password entered by the user in the sign in form
-                //check if credentials is null
-                if(credentials === null) return null;
+            async authorize(credentials) {
+  if (!credentials?.email || !credentials?.password) return null;
 
-                //find user by email in DB
+  const user = await prisma.user.findFirst({
+    where: { email: credentials.email as string }
+  });
 
-                const user = await prisma.user.findFirst({
-                    where: {email: credentials.email as string}
-                });
-                //check if the user exists and if the password matches
-                if(user && user.password === credentials.password){
-                    const isMatch = compareSync(credentials.password as string, user.password as string);
-                    //if password matches return user object otherwise return null
-                    if(isMatch){
-                        return {id: user.id, name: user.name, email: user.email, role: user.role};
-                    }
-                }
-                //if user does not exist or password does not match return null
-            return null;
-            }
+  if (!user) return null;
+
+  // Compare hashed password
+  const isMatch = compareSync(credentials.password as string, user.password as string);
+
+  if (!isMatch) return null;
+
+  // Return minimal user object
+  return { id: user.id, name: user.name, email: user.email, role: user.role };
+}
+
         })
     ],
     callbacks:{

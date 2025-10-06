@@ -3,12 +3,18 @@ import Link from "next/link"
 import Image from "next/image"
 import { APP_NAME } from "@/lib/constants"
 import CredentialSignInForm from "./credentials-signin-form"
+import { redirect } from "next/navigation"
+import { auth } from "../../../../auth"
 
 export const metadata = {
   title: 'Sign In'
 }
 
-const SignIn = () => {
+const SignInPage = async() => {
+  const session = await auth();
+  if(session){
+    redirect('/')
+  }
   return (
     <div className="w-full max-w-md mx-auto">
       <Card>
@@ -32,4 +38,4 @@ const SignIn = () => {
   )
 }
 
-export default SignIn
+export default SignInPage
