@@ -8,8 +8,12 @@ import {signinWithCredentials} from "@/lib/actions/user.actions"
 import { useActionState } from "react"
 import { useFormStatus } from "react-dom"
 import { Loader } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 const CredentialSignInForm = () => {
   const [data, action] = useActionState(signinWithCredentials, {success: false, message: ' '}) 
+
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
    
   const SignInButton = ()=>{
     const {pending} = useFormStatus()
@@ -23,6 +27,7 @@ const CredentialSignInForm = () => {
 
   return (
     <form className="space-y-4" action={action}>
+      <input type="hidden" name="callbackUrl" value={callbackUrl} />{/* persists to next page */}
         <div>
         <Label htmlFor="email" className="block text-sm font-medium">Email</Label>
         <Input id="email" name="email" type="email" required autoComplete="email" defaultValue={signInDefaultValues.email} />
