@@ -1,21 +1,21 @@
 'use client'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { signInDefaultValues } from "@/lib/constants"
+import { signUpDefaultValues } from "@/lib/constants"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import {signinWithCredentials} from "@/lib/actions/user.actions"
+import {signupUser} from "@/lib/actions/user.actions"
 import { useActionState } from "react"
 import { useFormStatus } from "react-dom"
 import { Loader } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-const CredentialSignInForm = () => {
-  const [data, action] = useActionState(signinWithCredentials, {success: false, message: ' '}) 
+const SignUpForm = () => {
+  const [data, action] = useActionState(signupUser, {success: false, message: ' '}) 
 
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/'
-   
-  const SignInButton = ()=>{
+
+  const SignUpButton = ()=>{
     const {pending} = useFormStatus()
 
     return(
@@ -29,18 +29,26 @@ const CredentialSignInForm = () => {
     <form className="space-y-4" action={action}>
       <input type="hidden" name="callbackUrl" value={callbackUrl} />{/* persists to next page */}
         <div>
+        <Label htmlFor="name" className="block text-sm font-medium">Name</Label>
+        <Input id="name" name="name" type="text" required autoComplete="name" defaultValue={signUpDefaultValues.name} />
+        </div>
+        <div>
         <Label htmlFor="email" className="block text-sm font-medium">Email</Label>
-        <Input id="email" name="email" type="email" required autoComplete="email" defaultValue={signInDefaultValues.email} />
+        <Input id="email" name="email" type="email" required autoComplete="email" defaultValue={signUpDefaultValues.email} />
         </div>
         <div>
         <Label htmlFor="password" className="block text-sm font-medium">Password</Label>
-        <Input id="password" name="password" type="password" required autoComplete="password" defaultValue={signInDefaultValues.password} />
+        <Input id="password" name="password" type="password" required autoComplete="password" defaultValue={signUpDefaultValues.password} />
         </div>
         <div>
-           <SignInButton />
+        <Label htmlFor="confirmPassword" className="block text-sm font-medium">Confirm Password</Label>
+        <Input id="confirmPassword" name="confirmPassword" type="password" required autoComplete="confirm-password" defaultValue={signUpDefaultValues.confirmPassword} />
+        </div>
+        <div>
+           <SignUpButton />
         </div>
         {/* Error message */}
-        {data && !data.success && ( //if the action to sign in failed pop out this message
+        {data && !data.success && ( //if the action to sign up failed pop out this message
           <div className="text-center text-destructive">
             {
             data.message
@@ -50,10 +58,10 @@ const CredentialSignInForm = () => {
         {/*  */}
 
         <div className="text-sm text-center text-muted-foreground">
-            Don&apos;t have an account? <Link href="/sign-up" target="_blank" className="text-primary hover:underline">Sign Up</Link>
+            Already have an account? <Link href="/sign-in" target="_self" className="text-primary hover:underline">Sign In</Link>
         </div>
     </form>
   )
 }
 
-export default CredentialSignInForm
+export default SignUpForm
