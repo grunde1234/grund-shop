@@ -30,11 +30,11 @@ const SignUpForm = () => {
       <input type="hidden" name="callbackUrl" value={callbackUrl} />{/* persists to next page */}
         <div>
         <Label htmlFor="name" className="block text-sm font-medium">Name</Label>
-        <Input id="name" name="name" type="text" required autoComplete="name" defaultValue={signUpDefaultValues.name} />
+        <Input id="name" name="name" type="text" autoComplete="name" defaultValue={signUpDefaultValues.name} />
         </div>
         <div>
         <Label htmlFor="email" className="block text-sm font-medium">Email</Label>
-        <Input id="email" name="email" type="email" required autoComplete="email" defaultValue={signUpDefaultValues.email} />
+        <Input id="email" name="email" type="text" autoComplete="email" defaultValue={signUpDefaultValues.email} />
         </div>
         <div>
         <Label htmlFor="password" className="block text-sm font-medium">Password</Label>
