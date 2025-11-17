@@ -18,7 +18,7 @@ export const config: NextAuthConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
     },
     adapter: PrismaAdapter(prisma),
-    providers:[//field to add more providers like google, facebook, twitter etc to login
+    providers:[//field to add m/ore providers like google, facebook, twitter etc to login
         CredentialsProvider({
             credentials:{
                 email: {label: "Email", type: "text", placeholder: "Email"},
@@ -48,12 +48,35 @@ export const config: NextAuthConfig = {
     async session({ session, user, trigger, token}: any) {
     //set user Id from the token
     session.user.id = token.sub;
+    session.user.role = token.role;
+    session.user.name = token.name;
+  
+    console.log(token)
     //if update then set user name
     if (trigger === 'update') {
         session.user.name = user.name;
     }
     return session
   },
+    async jwt({ token, user, trigger, session }: any) {
+    //assign user info to token at sign in
+    if(user){
+        token.role = user.role;
+        //if user has no name use email
+
+        if(user.name==='NO_NAME'){
+            token.name = user.email.split('@')[0];
+
+            //update name in db
+            await prisma.user.update({
+                where: {id: user.id},
+                data: {name: token.name}
+            });
+        }
+
+    }
+    return token;
+  }
     }
 };
 
