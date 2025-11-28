@@ -34,3 +34,15 @@ else if(error.name === 'PrismaClientKnownRequestError' && error.code === 'P2002'
     return typeof error.message === 'string' ? error.message : 'An unexpected error occurred. Please try again.';
   }
 }
+
+//round to 2 decimals
+export function round2(value: number | string) {
+  if(typeof value === 'number'){
+    /* return Math.round((value + Number.EPSILON) * 100) / 100; */
+    return Math.round((value + Number.EPSILON) * 100) / 100;
+  }else if(typeof value === 'string'){
+     return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+  }else{
+    throw new Error('Invalid value type');
+  }
+}

@@ -1,4 +1,3 @@
-"use client";
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -37,41 +36,40 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var button_1 = require("@/components/ui/button");
+exports.metadata = void 0;
+var card_1 = require("@/components/ui/card");
+var link_1 = require("next/link");
+var image_1 = require("next/image");
+var constants_1 = require("@/lib/constants");
+var credentials_signin_form_1 = require("./credentials-signin-form");
 var navigation_1 = require("next/navigation");
-var lucide_react_1 = require("lucide-react");
-var sonner_1 = require("sonner");
-var cart_action_1 = require("@/lib/actions/cart.action");
-var AddToCart = function (_a) {
-    var item = _a.item;
-    var router = navigation_1.useRouter();
-    //add to the cart and get a response
-    var handleAddToCart = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var res;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, cart_action_1.addItemToCart(item)];
-                case 1:
-                    res = _a.sent();
-                    if (!res.success) {
-                        sonner_1.toast.error(res.message);
-                        return [2 /*return*/];
-                    }
-                    //For success in this
-                    sonner_1.toast.success(item.name + " was added to cart", {
-                        action: {
-                            label: "Go to cart",
-                            onClick: function () {
-                                router.push("/cart");
-                            }
-                        }
-                    });
-                    return [2 /*return*/];
-            }
-        });
-    }); };
-    return (React.createElement(button_1.Button, { className: "w-full", type: "button", onClick: handleAddToCart },
-        React.createElement(lucide_react_1.Plus, null),
-        " Add To Cart"));
+var auth_1 = require("../../../../auth");
+exports.metadata = {
+    title: 'Sign In'
 };
-exports["default"] = AddToCart;
+var SignInPage = function (props) { return __awaiter(void 0, void 0, void 0, function () {
+    var callbackUrl, session;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, props.searchParams];
+            case 1:
+                callbackUrl = (_a.sent()).callbackUrl;
+                return [4 /*yield*/, auth_1.auth()];
+            case 2:
+                session = _a.sent();
+                if (session) {
+                    navigation_1.redirect(callbackUrl || '/');
+                }
+                return [2 /*return*/, (React.createElement("div", { className: "w-full max-w-md mx-auto" },
+                        React.createElement(card_1.Card, null,
+                            React.createElement(card_1.CardHeader, { className: "space-y-4" },
+                                React.createElement(link_1["default"], { href: '/', className: "flex-center" },
+                                    React.createElement(image_1["default"], { src: "/images/logo.png", width: 100, height: 100, alt: "" + constants_1.APP_NAME, priority: true })),
+                                React.createElement(card_1.CardTitle, { className: "text-center" }, "Sign In"),
+                                React.createElement(card_1.CardDescription, { className: "text-center" }, "Sign into your account")),
+                            React.createElement(card_1.CardContent, { className: "space-y-4" },
+                                React.createElement(credentials_signin_form_1["default"], null)))))];
+        }
+    });
+}); };
+exports["default"] = SignInPage;

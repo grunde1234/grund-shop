@@ -1,4 +1,3 @@
-"use client";
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -37,41 +36,55 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var button_1 = require("@/components/ui/button");
-var navigation_1 = require("next/navigation");
-var lucide_react_1 = require("lucide-react");
-var sonner_1 = require("sonner");
-var cart_action_1 = require("@/lib/actions/cart.action");
-var AddToCart = function (_a) {
-    var item = _a.item;
-    var router = navigation_1.useRouter();
-    //add to the cart and get a response
-    var handleAddToCart = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var res;
+var generated_1 = require("../src/generated/");
+var sample_data_1 = require("../sample-data");
+var ;
+new generated_1.Client();
+function main() {
+    return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, cart_action_1.addItemToCart(item)];
+                case 0: return [4 /*yield*/, .product.deleteMany()];
                 case 1:
-                    res = _a.sent();
-                    if (!res.success) {
-                        sonner_1.toast.error(res.message);
-                        return [2 /*return*/];
-                    }
-                    //For success in this
-                    sonner_1.toast.success(item.name + " was added to cart", {
-                        action: {
-                            label: "Go to cart",
-                            onClick: function () {
-                                router.push("/cart");
-                            }
-                        }
-                    });
+                    _a.sent();
+                    return [4 /*yield*/, .account.deleteMany()];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, .session.deleteMany()];
+                case 3:
+                    _a.sent();
+                    return [4 /*yield*/, .verificationToken.deleteMany()];
+                case 4:
+                    _a.sent();
+                    return [4 /*yield*/, .user.deleteMany()];
+                case 5:
+                    _a.sent();
+                    return [4 /*yield*/, .product.createMany({
+                            data: sample_data_1["default"].products
+                        })];
+                case 6:
+                    _a.sent();
+                    return [4 /*yield*/, .user.createMany({
+                            data: sample_data_1["default"].users
+                        })];
+                case 7:
+                    _a.sent();
+                    console.log('✅ DB seeded successfully');
                     return [2 /*return*/];
             }
         });
-    }); };
-    return (React.createElement(button_1.Button, { className: "w-full", type: "button", onClick: handleAddToCart },
-        React.createElement(lucide_react_1.Plus, null),
-        " Add To Cart"));
-};
-exports["default"] = AddToCart;
+    });
+}
+main()["catch"](function (e) {
+    console.error(e);
+    process.exit(1);
+})["finally"](function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, .$disconnect()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });

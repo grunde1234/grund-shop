@@ -1,5 +1,16 @@
 'use server';
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -37,14 +48,126 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.addItemToCart = void 0;
+exports.getMyCart = exports.addItemToCart = void 0;
+var headers_1 = require("next/headers");
+var utils_1 = require("../utils");
+var auth_1 = require("../../../auth");
+var prisma_1 = require("../../../db/prisma");
+var validators_1 = require("../validators");
+var utils_2 = require("../utils");
+var cache_1 = require("next/cache");
+// Calculate cart prices
+var calcPrice = function (items) {
+    var itemPrice = utils_2.round2(items.reduce(function (acc, item) { return acc + Number(item.price) * item.qty; }, 0));
+    var shippingPrice = utils_2.round2(itemPrice > 10 ? 0 : 10);
+    var taxPrice = utils_2.round2((itemPrice * 15) / 100);
+    var totalPrice = utils_2.round2(itemPrice + shippingPrice + taxPrice);
+    return {
+        itemPrice: itemPrice.toFixed(2),
+        shippingPrice: shippingPrice.toFixed(2),
+        taxPrice: taxPrice.toFixed(2),
+        totalPrice: totalPrice.toFixed(2)
+    };
+};
 function addItemToCart(data) {
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/, {
-                    success: true, message: 'Item added to cart successfully'
-                }];
+        var sessionCartId, session, userId, cart, item, product, newCart, error_1;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0:
+                    _d.trys.push([0, 7, , 8]);
+                    return [4 /*yield*/, headers_1.cookies()];
+                case 1:
+                    sessionCartId = (_a = (_d.sent()).get("sessionCartId")) === null || _a === void 0 ? void 0 : _a.value;
+                    if (!sessionCartId)
+                        throw new Error("Cart session not found");
+                    return [4 /*yield*/, auth_1.auth()];
+                case 2:
+                    session = _d.sent();
+                    userId = ((_b = session === null || session === void 0 ? void 0 : session.user) === null || _b === void 0 ? void 0 : _b.id) ? session.user.id : undefined;
+                    return [4 /*yield*/, getMyCart()
+                        // Parse and validate item
+                    ];
+                case 3:
+                    cart = _d.sent();
+                    item = validators_1.cartItemSchema.parse(data);
+                    return [4 /*yield*/, prisma_1.prisma.product.findFirst({
+                            where: { id: item.productId }
+                        })];
+                case 4:
+                    product = _d.sent();
+                    if (!product)
+                        throw new Error("Product not found");
+                    if (!!cart) return [3 /*break*/, 6];
+                    newCart = validators_1.insertCartSchema.parse(__assign({ userId: userId, items: [item], sessionCartId: sessionCartId }, calcPrice([item])));
+                    // Debug
+                    console.log("NEW CART:", newCart);
+                    return [4 /*yield*/, prisma_1.prisma.cart.create({
+                            data: {
+                                userId: (_c = newCart.userId) !== null && _c !== void 0 ? _c : null,
+                                sessionCartId: newCart.sessionCartId,
+                                // items is stored as JSON
+                                items: newCart.items,
+                                // Correct Prisma field names
+                                itemsPrice: newCart.itemPrice,
+                                shippingPrice: newCart.shippingPrice,
+                                taxPrice: newCart.taxPrice,
+                                totalPrice: newCart.totalPrice
+                            }
+                        })];
+                case 5:
+                    _d.sent();
+                    //Revalidate the product page because of cleared cache
+                    cache_1.revalidatePath("/product/" + product.slug);
+                    return [2 /*return*/, {
+                            success: true,
+                            message: "Item added to cart successfully"
+                        }];
+                case 6: return [2 /*return*/, {
+                        success: true,
+                        message: "Item added to cart successfully"
+                    }];
+                case 7:
+                    error_1 = _d.sent();
+                    return [2 /*return*/, {
+                            success: false,
+                            message: utils_1.formatError(error_1)
+                        }];
+                case 8: return [2 /*return*/];
+            }
         });
     });
 }
 exports.addItemToCart = addItemToCart;
+function getMyCart() {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function () {
+        var sessionCartId, session, userId, cart;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0: return [4 /*yield*/, headers_1.cookies()];
+                case 1:
+                    sessionCartId = (_a = (_c.sent()).get("sessionCartId")) === null || _a === void 0 ? void 0 : _a.value;
+                    if (!sessionCartId)
+                        throw new Error("Cart session not found");
+                    return [4 /*yield*/, auth_1.auth()];
+                case 2:
+                    session = _c.sent();
+                    userId = ((_b = session === null || session === void 0 ? void 0 : session.user) === null || _b === void 0 ? void 0 : _b.id) ? session.user.id : undefined;
+                    return [4 /*yield*/, prisma_1.prisma.cart.findFirst({
+                            where: userId ? { userId: userId } : { sessionCartId: sessionCartId }
+                        })];
+                case 3:
+                    cart = _c.sent();
+                    if (!cart)
+                        return [2 /*return*/, undefined
+                            // Convert Prisma Decimal fields to JS strings
+                        ];
+                    // Convert Prisma Decimal fields to JS strings
+                    return [2 /*return*/, utils_2.convertToPlainObject(__assign(__assign({}, cart), { items: cart.items, itemsPrice: cart.itemsPrice.toString(), totalPrice: cart.totalPrice.toString(), shippingPrice: cart.shippingPrice.toString(), taxPrice: cart.taxPrice.toString() }))];
+            }
+        });
+    });
+}
+exports.getMyCart = getMyCart;
