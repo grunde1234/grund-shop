@@ -1,7 +1,7 @@
 import { ModeToggle } from "@/components/shared/ModeToggle";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, UserIcon, EllipsisVertical } from "lucide-react";
+import { ShoppingCart, EllipsisVertical } from "lucide-react";
 import {
   Sheet,
   SheetTrigger,

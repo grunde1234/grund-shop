@@ -7,8 +7,9 @@ import { auth } from "../../../auth"
 import { prisma } from "../../../db/prisma"
 import { cartItemSchema, insertCartSchema } from "../validators"
 import { convertToPlainObject, round2 } from "../utils"
-import {revalidatePath} from 'next/cache'
-
+import { revalidatePath } from 'next/cache'
+/* import { Prisma } from '@prisma/client'
+ */
 // Calculate cart prices
 const calcPrice = (items: CartItem[]) => {
   const itemPrice = round2(
@@ -50,8 +51,10 @@ export async function addItemToCart(data: CartItem) {
 
     if (!product) throw new Error("Product not found")
 
+    // ----------------------------------------------------
+    // CASE 1: CART DOES NOT EXIST → CREATE NEW CART
+    // ----------------------------------------------------
     if (!cart) {
-      // Create new cart
       const newCart = insertCartSchema.parse({
         userId,
         items: [item],
@@ -59,40 +62,74 @@ export async function addItemToCart(data: CartItem) {
         ...calcPrice([item]),
       })
 
-      // Debug
-     console.log("NEW CART:", newCart);
+      console.log("NEW CART:", newCart)
 
-await prisma.cart.create({
-  data: {
-    userId: newCart.userId ?? null,
-    sessionCartId: newCart.sessionCartId,
+      await prisma.cart.create({
+        data: {
+          userId: newCart.userId ?? null,
+          sessionCartId: newCart.sessionCartId,
+          items: newCart.items,
+          itemsPrice: newCart.itemPrice,
+          shippingPrice: newCart.shippingPrice,
+          taxPrice: newCart.taxPrice,
+          totalPrice: newCart.totalPrice,
+        },
+      })
 
-    // items is stored as JSON
-    items: newCart.items,
-
-    // Correct Prisma field names
-    itemsPrice: newCart.itemPrice, 
-    shippingPrice: newCart.shippingPrice,
-    taxPrice: newCart.taxPrice,
-    totalPrice: newCart.totalPrice,
-  },
-});
-
-      //Revalidate the product page because of cleared cache
       revalidatePath(`/product/${product.slug}`)
 
       return {
-      success: true,
-      message: "Item added to cart successfully",
+        success: true,
+        message: `${product.name} added to cart successfully`,
+      }
     }
 
-    }else{
-        
+    // ----------------------------------------------------
+    // CASE 2: CART EXISTS → UPDATE CART
+    // ----------------------------------------------------
+    const existItems = (cart.items as CartItem[]).find(
+      (x) => x.productId === item.productId
+    )
+
+    if (existItems) {
+      // check stock
+      if (product.stock < existItems.qty + 1) {
+        throw new Error("Not enough")
+      }
+
+      // increase qty
+      existItems.qty = existItems.qty + 1
+    } else {
+      // new item, check stock
+      if (product.stock < item.qty) {
+        throw new Error("Not enough")
+      }
+
+      cart.items.push(item)
     }
+
+    // save updated cart
+    const prices = calcPrice(cart.items as CartItem[])
+
+await prisma.cart.update({
+  where: { id: cart.id },
+  data: {
+    items: cart.items,
+
+    // MUST MATCH Prisma schema names
+    itemsPrice: prices.itemPrice,
+    shippingPrice: prices.shippingPrice,
+    taxPrice: prices.taxPrice,
+    totalPrice: prices.totalPrice,
+  },
+})
+
+
+    revalidatePath(`/product/${product.slug}`)
 
     return {
       success: true,
-      message: "Item added to cart successfully",
+      message: `${product.name} ${existItems ? "updated" : "added to"} cart`,
     }
   } catch (error) {
     return {
@@ -103,22 +140,18 @@ await prisma.cart.create({
 }
 
 export async function getMyCart() {
-  // Check for session cookie
   const sessionCartId = (await cookies()).get("sessionCartId")?.value
   if (!sessionCartId) throw new Error("Cart session not found")
 
-  // Auth user
   const session = await auth()
   const userId = session?.user?.id ? (session.user.id as string) : undefined
 
-  // Find cart in DB
   const cart = await prisma.cart.findFirst({
     where: userId ? { userId } : { sessionCartId },
   })
 
   if (!cart) return undefined
 
-  // Convert Prisma Decimal fields to JS strings
   return convertToPlainObject({
     ...cart,
     items: cart.items as CartItem[],

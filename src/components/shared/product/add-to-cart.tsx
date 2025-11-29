@@ -18,7 +18,7 @@ const AddToCart = ({ item }: { item: CartItem }) => {
     }
 
     //For success in this
-    toast.success(`${item.name} was added to cart`, {
+    toast.success(res.message, {
       action: {
         label: "Go to cart",
         onClick: () => {
@@ -28,7 +28,7 @@ const AddToCart = ({ item }: { item: CartItem }) => {
     });
   };
   return (
-    <Button className="w-full" type="button" onClick={handleAddToCart}>
+    <Button className="w-full cursor-pointer" type="button" onClick={handleAddToCart}>
       <Plus /> Add To Cart
     </Button>
   );

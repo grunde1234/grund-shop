@@ -1,4 +1,4 @@
-import { Client } from '../src/generated/';
+/* import { Client } from '../src/generated/';
 import sampleData from '../sample-data';
 
 const  = new Client();
@@ -28,3 +28,4 @@ main()
   .finally(async () => {
     await .$disconnect();
   });
+ */
