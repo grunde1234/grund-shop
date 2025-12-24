@@ -198,9 +198,13 @@ export async function removeItemFromCart(productId: string){
       //Decrease the qty
       (cart.items as CartItem[]).find((x)=> x.productId === productId)!.qty = exist.qty - 1;
     }
+    //exist.qty -= 1
 
     //?????????????????????
     //************* */
+
+    const prices = calcPrice(cart.items as CartItem[])
+
 
     //update cart in db
     await prisma.cart.update({
@@ -209,10 +213,10 @@ export async function removeItemFromCart(productId: string){
     items: cart.items,
 
     // MUST MATCH Prisma schema names
-    itemsPrice: cart.itemsPrice,
-    shippingPrice: cart.shippingPrice,
-    taxPrice: cart.taxPrice,
-    totalPrice: cart.totalPrice,
+    itemsPrice: prices.itemPrice,
+    shippingPrice: prices.shippingPrice,
+    taxPrice: prices.taxPrice,
+    totalPrice: prices.totalPrice,
   },
 });
 //????????????????????????????

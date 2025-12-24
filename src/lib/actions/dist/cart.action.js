@@ -206,7 +206,7 @@ exports.getMyCart = getMyCart;
 function removeItemFromCart(productId) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var sessionCartId, product, cart, exist_1, error_2;
+        var sessionCartId, product, cart, exist_1, prices, error_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -241,23 +241,20 @@ function removeItemFromCart(productId) {
                         //Decrease the qty
                         cart.items.find(function (x) { return x.productId === productId; }).qty = exist_1.qty - 1;
                     }
-                    //?????????????????????
-                    //************* */
+                    prices = calcPrice(cart.items);
                     //update cart in db
                     return [4 /*yield*/, prisma_1.prisma.cart.update({
                             where: { id: cart.id },
                             data: {
                                 items: cart.items,
                                 // MUST MATCH Prisma schema names
-                                itemsPrice: cart.itemsPrice,
-                                shippingPrice: cart.shippingPrice,
-                                taxPrice: cart.taxPrice,
-                                totalPrice: cart.totalPrice
+                                itemsPrice: prices.itemPrice,
+                                shippingPrice: prices.shippingPrice,
+                                taxPrice: prices.taxPrice,
+                                totalPrice: prices.totalPrice
                             }
                         })];
                 case 4:
-                    //?????????????????????
-                    //************* */
                     //update cart in db
                     _b.sent();
                     //????????????????????????????
