@@ -42,56 +42,66 @@ var navigation_1 = require("next/navigation");
 var lucide_react_1 = require("lucide-react");
 var sonner_1 = require("sonner");
 var cart_action_1 = require("@/lib/actions/cart.action");
+var react_1 = require("react");
 var AddToCart = function (_a) {
     var cart = _a.cart, item = _a.item;
     var router = navigation_1.useRouter();
     //add to the cart and get a response
+    var _b = react_1.useTransition(), isPending = _b[0], startTransition = _b[1];
     var handleAddToCart = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var res;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, cart_action_1.addItemToCart(item)];
-                case 1:
-                    res = _a.sent();
-                    if (!res.success) {
-                        sonner_1.toast.error(res.message);
-                        return [2 /*return*/];
-                    }
-                    //For success in this
-                    sonner_1.toast.success(res.message, {
-                        action: {
-                            label: "Go to cart",
-                            onClick: function () {
-                                router.push("/cart");
+            startTransition(function () { return __awaiter(void 0, void 0, void 0, function () {
+                var res;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, cart_action_1.addItemToCart(item)];
+                        case 1:
+                            res = _a.sent();
+                            if (!res.success) {
+                                sonner_1.toast.error(res.message);
+                                return [2 /*return*/];
                             }
-                        }
-                    });
-                    return [2 /*return*/];
-            }
+                            //For success in this
+                            sonner_1.toast.success(res.message, {
+                                action: {
+                                    label: "Go to cart",
+                                    onClick: function () {
+                                        router.push("/cart");
+                                    }
+                                }
+                            });
+                            return [2 /*return*/];
+                    }
+                });
+            }); });
+            return [2 /*return*/];
         });
     }); };
     var handleRemoveFromCart = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var res, to;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, cart_action_1.removeItemFromCart(item.productId)];
-                case 1:
-                    res = _a.sent();
-                    to = res.success ? sonner_1.toast.success(res.message)
-                        : sonner_1.toast.error(res.message);
-                    return [2 /*return*/];
-            }
+            startTransition(function () { return __awaiter(void 0, void 0, void 0, function () {
+                var res, to;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, cart_action_1.removeItemFromCart(item.productId)];
+                        case 1:
+                            res = _a.sent();
+                            to = res.success ? sonner_1.toast.success(res.message)
+                                : sonner_1.toast.error(res.message);
+                            return [2 /*return*/];
+                    }
+                });
+            }); });
+            return [2 /*return*/];
         });
     }); };
     //check if item is in the cart 
     var existItem = cart && cart.items.find(function (x) { return x.productId === item.productId; });
     return existItem ? (React.createElement("div", null,
-        React.createElement(button_1.Button, { type: 'button', variant: 'outline', onClick: handleRemoveFromCart },
-            React.createElement(lucide_react_1.Minus, { className: 'h-4 w-4' })),
+        React.createElement(button_1.Button, { type: 'button', variant: 'outline', onClick: handleRemoveFromCart }, isPending ? (React.createElement(lucide_react_1.Loader, { className: 'w-4 h-4 animate-spin' })) : (React.createElement(lucide_react_1.Minus, { className: 'h-4 w-4' }))),
         React.createElement("span", { className: "px-2" }, existItem.qty),
-        React.createElement(button_1.Button, { type: 'button', variant: 'outline', onClick: handleAddToCart },
-            React.createElement(lucide_react_1.Plus, { className: 'h-4 w-4' })))) : (React.createElement(button_1.Button, { className: "w-full cursor-pointer", type: "button", onClick: handleAddToCart },
-        React.createElement(lucide_react_1.Plus, null),
-        " Add To Cart"));
+        React.createElement(button_1.Button, { type: 'button', variant: 'outline', onClick: handleAddToCart }, isPending ? (React.createElement(lucide_react_1.Loader, { className: 'w-4 h-4 animate-spin' })) : (React.createElement(lucide_react_1.Plus, { className: 'h-4 w-4' }))))) : (React.createElement(button_1.Button, { className: "w-full cursor-pointer", type: "button", onClick: handleAddToCart },
+        isPending ? (React.createElement(lucide_react_1.Loader, { className: 'w-4 h-4 animate-spin' })) : (React.createElement(lucide_react_1.Plus, { className: 'h-4 w-4' })),
+        "    Add To Cart"));
 };
 exports["default"] = AddToCart;
