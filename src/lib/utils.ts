@@ -18,7 +18,6 @@ export function formatNumber (num: number): string {
 }
 
 //format errors
-//eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function formatError(error: any) {
  const zodErrors = error.errors || error.issues;
 if (Array.isArray(zodErrors)) {
