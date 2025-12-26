@@ -1,11 +1,12 @@
 'use client'
 
 import {Cart } from "@/Zod-schemas";
-import { useRouter } from "next/navigation";
+/* import { useRouter } from "next/navigation";
+ */
 import {toast} from 'sonner';
 import {useTransition} from 'react'
 import {addItemToCart, removeItemFromCart} from '@/lib/actions/cart.action'
-import {ArrowRight, Loader, Plus, Minus} from 'lucide-react'
+import {/* ArrowRight,  */Loader, Plus, Minus} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import {Button} from '@/components/ui/button'
@@ -19,7 +20,7 @@ import {
 } from '@/components/ui/table'
 
 const CartTable = ({cart}: {cart?: Cart}) => {
-    const router = useRouter();
+   // const router = useRouter();
     const [isPending, startTransition] = useTransition()
   return (
     <div>

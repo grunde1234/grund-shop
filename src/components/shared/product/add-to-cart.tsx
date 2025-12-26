@@ -40,9 +40,11 @@ const handleRemoveFromCart =async ()=>{
   startTransition(async()=>{
     const res = await removeItemFromCart(item.productId);
   
-  const to = res.success ?  toast.success(res.message)
-    : toast.error(res.message);
-
+    if(!res.success){
+      toast.error(res.message);
+    }else{
+      toast.success(res.message)
+    }
   return
   })
 }
