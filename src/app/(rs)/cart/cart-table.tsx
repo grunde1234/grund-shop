@@ -1,12 +1,11 @@
 'use client'
 
 import {Cart } from "@/Zod-schemas";
-/* import { useRouter } from "next/navigation";
- */
+import { useRouter } from "next/navigation";
 import {toast} from 'sonner';
 import {useTransition} from 'react'
 import {addItemToCart, removeItemFromCart} from '@/lib/actions/cart.action'
-import {/* ArrowRight,  */Loader, Plus, Minus} from 'lucide-react'
+import {ArrowRight,Loader, Plus, Minus} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import {Button} from '@/components/ui/button'
@@ -18,9 +17,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {formatCurrency} from '@/lib/utils'
+import {Card, CardContent} from '@/components/ui/card'
 
 const CartTable = ({cart}: {cart?: Cart}) => {
-   // const router = useRouter();
+    const router = useRouter();
     const [isPending, startTransition] = useTransition()
   return (
     <div>
@@ -87,6 +88,22 @@ const CartTable = ({cart}: {cart?: Cart}) => {
                         </TableBody>
                     </Table>
                     </div>
+
+                    <Card>
+                        <CardContent className="p-4 gap-4">
+                            <div className="pb-3 text-xl">
+                                Subtotal ({cart.items.reduce((a,c)=> a + c.qty, 0)}):
+                                <span className="font-bold">{formatCurrency(cart.itemPrice)}</span>
+                            </div>
+                            <Button className="w-full" disabled={isPending} onClick={() => startTransition(() => router.push('/shipping-address'))}>
+                            {
+                                isPending 
+                                ? <Loader className="w-4 h-4 animate-spin" />
+                                : <ArrowRight className="w-4 h-4" />
+                            } Proceed to Checkout
+                            </Button>
+                        </CardContent>
+                    </Card>
                 </div>
             )}
         </h1>
