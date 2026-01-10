@@ -1,5 +1,6 @@
 import {z} from 'zod'
 import { formatNumber } from './utils'
+import {PAYMENT_METHODS} from '@/lib/constants/index'
 
 const currency =  z.string().refine((val)=> /^\d+(\.\d{2})?$/.test(formatNumber(Number(val))) , 'Invalid price format')
 
@@ -66,4 +67,30 @@ export const shippingAddressSchema = z.object({
     country: z.string().min(3, 'Country must be atleast 3 characters'),
     lat: z.number().optional(),
     lng: z.number().optional(),
+})
+
+//Schema for Payment method
+export const paymentMethodSchema = z.object({
+    type: z.string().min(1, 'Payment method is required').refine((data) => PAYMENT_METHODS.includes(data), { path: ['type'], message: 'Invalid payment method' })
+})
+
+//Inserting order
+export const insertOrderSchema = z.object({
+    userId: z.string().min(1, 'User ID is required'),
+    itemPrice: currency,
+    shippingPrice: currency,
+    taxPrice: currency,
+    totalPrice: currency,
+    paymentMethod: z.string().refine((data) => PAYMENT_METHODS.includes(data), { message: 'Invalid payment method' }),
+    shippingAddress: shippingAddressSchema,
+});
+
+//Inserting order item
+export const orderItemSchema = z.object({
+    productId: z.string().min(1, 'Product ID is required'),
+    name: z.string().min(1, 'Name is required'),
+    slug: z.string().min(1, 'Slug is required'),
+    image: z.string().min(1, 'Image is required'),
+    qty: z.number().int().nonnegative('Quantity must be at least 1'),
+    price: currency,
 })

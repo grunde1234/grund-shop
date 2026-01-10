@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
+/* import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
 export function middleware(req: NextRequest) {
   //Array of regex patterns of paths we want to protect
  /*  const protectedPaths = [
@@ -17,11 +16,10 @@ export function middleware(req: NextRequest) {
   
   //check if user is not authenticated and accessing a protected route or path
   if(!auth && protectedPaths.some((p)=> p.test(pathname))) return false
-  */
-
+  
+*/
 
   const sessionCartId = req.cookies.get("sessionCartId")?.value;
- 
   // If no session cookie, create one
   if (!sessionCartId) {
     const newSessionId = crypto.randomUUID();
@@ -42,5 +40,6 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|shipping-address|$).*)"],
 };
+ */

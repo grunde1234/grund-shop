@@ -7,7 +7,7 @@ import {useTransition} from 'react'
 import {Loader, ArrowRight} from 'lucide-react'
 import {shippingAddressSchema} from '@/lib/validators'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {useForm, ControllerRenderProps} from 'react-hook-form'
+import {useForm, /* ControllerRenderProps */SubmitHandler} from 'react-hook-form'
 import {
  Form,
  FormControl,
@@ -17,6 +17,7 @@ import {
   FormMessage,} from '@/components/ui/form'
 import { Input } from "@/components/ui/input"
 import {Button} from '@/components/ui/button'
+import {updateUserAddress} from '@/lib/actions/user.actions'
 
 type props = {
     address?: ShippingAddress,
@@ -41,9 +42,19 @@ const ShippingAddressForm = ({address}: props) => {
         defaultValues
     })
 
-    async function submitForm(data:ShippingAddress){
-        console.log(data)
+  const submitForm: SubmitHandler<ShippingAddress> = (data) => {
+  startTransition(async () => {
+    const res = await updateUserAddress(data);
+
+    if (!res.success) {
+      toast.error(res.message);
+      return;
     }
+
+    router.push("/payment-method");
+  });
+};
+
 
   return (
     <div className="max-w-md mx-auto space-y-4">
