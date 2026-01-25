@@ -2,6 +2,7 @@ import { Pool, neonConfig } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '../src/generated/prisma';
 import ws from 'ws';
+import { Item } from '@radix-ui/react-dropdown-menu';
 
 // Sets up WebSocket connections, which enables Neon to use WebSocket communication.
 neonConfig.webSocketConstructor = ws;
@@ -23,6 +24,65 @@ export const prisma = new PrismaClient({ adapter }).$extends({
         compute(product) {
           return product.rating.toString();
         },
+      },
+    },
+    cart:{
+      ItemsPrice:{
+        needs: {itemsPrice: true},//indicates the field needed from DB
+        compute(cart){
+          return cart.itemsPrice.toString();
+        }
+      },
+      ShippingPrice:{
+        needs: {shippingPrice: true},//indicates the field needed from DB
+        compute(cart){
+          return cart.shippingPrice.toString();
+        }
+      },
+      taxPrice:{
+        needs: {taxPrice: true},//indicates the field needed from DB
+        compute(cart){
+          return cart.taxPrice.toString();
+        }
+      },
+      totalPrice:{
+        needs: {totalPrice: true},//indicates the field needed from DB
+        compute(cart){
+          return cart.totalPrice.toString();
+        }
+      },
+    },
+    order:{
+      ItemsPrice:{
+        needs: {itemsPrice: true},//indicates the field needed from DB
+        compute(cart){
+          return cart.itemsPrice.toString();
+        }
+      },
+      ShippingPrice:{
+        needs: {shippingPrice: true},//indicates the field needed from DB
+        compute(cart){
+          return cart.shippingPrice.toString();
+        }
+      },
+      taxPrice:{
+        needs: {taxPrice: true},//indicates the field needed from DB
+        compute(cart){
+          return cart.taxPrice.toString();
+        }
+      },
+      totalPrice:{
+        needs: {totalPrice: true},//indicates the field needed from DB
+        compute(cart){
+          return cart.totalPrice.toString();
+        }
+      },
+    },
+    orderItem:{
+      price:{
+        compute(orderItem){
+          return orderItem.price.toString();
+        }
       },
     },
   },

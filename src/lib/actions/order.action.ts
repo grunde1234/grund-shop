@@ -128,7 +128,7 @@ return {
        const data = await prisma.order.findFirst({
         where: {id: orderId},
         include: {
-            orderItem: true,
+            orderitems: true,
             user: {select: {name: true, email: true}}
         }
     });
