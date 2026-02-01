@@ -1,4 +1,4 @@
-const base = process.env.PAYPAL_API_URL || 'https://api-m.sandbox.paypal.com';
+const base = process.env.PAYPAL_API_URL || 'https://api-m.sandbox.paypal.com';//where to send server header to for the paypal api server access
 
 export const paypal = {}//functions to create others and capture payments namespace and a paypal service container
 
@@ -10,7 +10,7 @@ async function generateAccessToken() {
     const response = await fetch(`${base}/v1/oauth2/token`, {
         method: 'POST',
         headers: {
-            'Authorization': `Basic ${auth}`,
+            'Authorization': `Basic ${auth}`,//auth is the base64 encoded client id and secret and permanent
             'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: 'grant_type=client_credentials'
@@ -18,7 +18,7 @@ async function generateAccessToken() {
 
     if(response.ok){
         const jsonData = await response.json();
-        return jsonData.access_token;
+        return jsonData.access_token;//gives me the access token if successful when authorization is granted
     }else{
         const errorMessage = await response.text();
         throw new Error(`Failed to generate access token: ${errorMessage}`);

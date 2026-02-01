@@ -1,11 +1,11 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { PrismaNeon } from '@prisma/adapter-neon';
+import { Pool, neonConfig } from '@neondatabase/serverless';/* Neon’s serverless Postgres driver */
+import { PrismaNeon } from '@prisma/adapter-neon';// Prisma adapter for Neon This is the bridge between Prisma and Neon
 import { PrismaClient } from '../src/generated/prisma';
 import ws from 'ws';
-import { Item } from '@radix-ui/react-dropdown-menu';
+
 
 // Sets up WebSocket connections, which enables Neon to use WebSocket communication.
-neonConfig.webSocketConstructor = ws;
+neonConfig.webSocketConstructor = ws;/* lets you configure how Neon connects */
 const connectionString = `${process.env.DATABASE_URL}`;
 
 // Instantiates the Prisma adapter using the connection string to handle the connection between Prisma and Neon.
@@ -88,3 +88,9 @@ export const prisma = new PrismaClient({ adapter }).$extends({
   },
 });
 //this handles connection pooling for serverless environments
+
+/* ✅ Makes Prisma work with Neon serverless Postgres
+✅ Prevents connection pooling issues
+✅ Converts Decimal → string automatically
+✅ Keeps frontend & API safe
+✅ Centralizes DB logic in one place */
