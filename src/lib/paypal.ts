@@ -24,3 +24,5 @@ async function generateAccessToken() {
         throw new Error(`Failed to generate access token: ${errorMessage}`);
     }
 }
+
+export default generateAccessToken;
