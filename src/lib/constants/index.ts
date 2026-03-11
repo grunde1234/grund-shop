@@ -21,6 +21,6 @@ export const shippingAddressDefaultValues = {
     postalCode: '123456',
     country: 'USA',
 }
-export const PAYMENT_METHODS = process.env.PAYMENT_METHODS ?  process.env.PAYMENT_METHODS.split(',') : ['PayPal', 'Stripe', 'CashOnDelivery'];
+export const PAYMENT_METHODS = process.env.PAYMENT_METHODS ?  process.env.PAYMENT_METHODS.split(',') : ['PayPal', 'Stripe', 'CashOnDelivery'];//validation using refine and include and map in form
 
 export const DEFAULT_PAYMENT_METHOD = process.env.DEFAULT_PAYMENT_METHOD || 'PayPal';

@@ -9,14 +9,14 @@ export const metadata = {
 const PaymentMethodPage = async() => {
     const session = await auth();
     const userId = session?.user?.id;
-
+    //? Does the preferredPaymentMethod={} even needed
     if (!userId) throw new Error('ID not found')
 
     const user = await getUserById(userId);
   return (
     <>
     <CheckoutSteps current={2}/>
-    <PaymentMethodForm preferredPaymentMethod={user.paymentMethod} />
+    <PaymentMethodForm preferredPaymentMethod={user.paymentMethod} />{/* pass the users choice */}
     </>
   )
 }

@@ -88,7 +88,7 @@ const PaymentMethodForm = ({preferredPaymentMethod}: {preferredPaymentMethod: st
             </div>
 
             <div className="flex gap-2">
-                <Button type="submit" disabled={isPending}>
+                <Button type="submit" disabled={isPending}>{/* then it is set back to false after loading */}
                 {
                     isPending ? (<Loader className="w-4 h-4 animate-spin"/>) : (<ArrowRight className="w-4 h-4"/>)
                 }Continue

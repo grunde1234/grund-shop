@@ -8,161 +8,80 @@ import { getMyCart } from "./cart.action";
 import { getUserById } from "./user.actions";
 import { insertOrderSchema } from "../validators";
 import { CartItem, PaymentResult } from "@/Zod-schemas";
-import { paypal } from "../paypal";// has the create order and capture payment functions
+import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
-import { success } from "zod";
 
-
-//action to create order and create order items in db
 export async function createOrder() {
-try{
-    // Implementation for creating an order and its items
+  try {
     const session = await auth();
-    const userId = session?.user?.id;
+    if (!session) throw new Error("User not authenticated");
 
-    if(!session) throw new Error("User not authenticated");
-    const cart = await getMyCart();
+    const [cart, user] = await Promise.all([
+      getMyCart(),
+      getUserById(session.user!.id!)
+    ]);
 
+    if (!cart?.items.length) return { success: false, message: "Cart is empty", redirectTo: '/cart' };
+    if (!user.address)        return { success: false, message: "No shipping address", redirectTo: '/shipping-address' };
+    if (!user.paymentMethod)  return { success: false, message: "No payment method", redirectTo: '/payment-method' };
 
-    if(!userId) throw new Error("User not found");
-    if(!cart || cart.items.length === 0) throw new Error("Cart is empty");
+    const orderData = insertOrderSchema.parse({
+      userId: user.id,
+      itemsPrice: cart.itemsPrice,
+      shippingPrice: cart.shippingPrice,
+      taxPrice: cart.taxPrice,
+      totalPrice: cart.totalPrice,
+      paymentMethod: user.paymentMethod,
+      shippingAddress: user.address,
+    });
+    //* Create order
+    const insertedOrderId = await prisma.$transaction(async (tx) => {
+      const order = await tx.order.create({
+        data: { ...orderData, orderItems: cart.items.map(({ productId, name, slug, image, qty, price }) =>
+          ({ productId, name, slug, image, qty, price })) }
+      });
+      //* Create order items from cart items
+      await Promise.all(cart.items.map((item: CartItem) =>
+        tx.orderItem.create({ data: { orderId: order.id, ...item } })
+      ));
+      //* Reset cart to empty
+      await tx.cart.update({
+        where: { id: cart.id },
+        data: { items: [], itemsPrice: 0, shippingPrice: 0, taxPrice: 0, totalPrice: 0 }
+      });
 
-    const user = await getUserById(userId);
-
-    if(!cart || cart.items.length === 0){
-        return{
-            success: false,
-            message: "Cart is empty",
-            redirectTo: '/cart'
-        }
-    };
-    if(!user.address){
-        return{
-            success: false,
-            message: "User address not found",
-            redirectTo: '/shipping-address'
-        }
-    };
-    if(!user.paymentMethod){
-        return{
-            success: false,
-            message: "User payment method not found",
-            redirectTo: '/payment-method'
-        }
-    };
-
-    // create order object
-
-   // In createOrder(), after validations...
-const orderData = insertOrderSchema.parse({
-  userId: user.id,
-  itemsPrice: cart.itemsPrice,  // Now matches schema
-  shippingPrice: cart.shippingPrice,
-  taxPrice: cart.taxPrice,
-  totalPrice: cart.totalPrice,
-  paymentMethod: user.paymentMethod,
-  shippingAddress: user.address,
-});
-
-const insertedOrderId = await prisma.$transaction(async (tx) => {
-  const insertedOrder = await tx.order.create({
-    data: {
-      ...orderData,
-      orderItems: cart.items.map(item => ({
-        productId: item.productId,
-        name: item.name,  // Add from cart item
-        slug: item.slug,
-        image: item.image,
-        qty: item.qty,
-        price: item.price,
-      })) || null,  // JSON array or null
-    },
-  });
-  //create order items from cart items so iterate through cart items
-  for(const item of cart.items as CartItem[]){
-    await tx.orderItem.create({
-      data: {
-        orderId: insertedOrder.id,
-        productId: item.productId,
-        name: item.name,
-        slug: item.slug,
-        image: item.image,
-        qty: item.qty,
-        price: item.price,
-      }
-    })
-  }
- //clear user cart after order is created
- await tx.cart.update({
-    where: {id: cart.id},
-    data: {items: [], itemsPrice: 0, shippingPrice: 0, taxPrice: 0, totalPrice: 0}
-  })
-  return insertedOrder.id;
-  });
-
-
-/* return { success: true, message: 'Order created successfully' };
- */
-if(!insertedOrderId) throw new Error('Order creation failed');
-
-return {
-    success: true,
-    message: 'Order created successfully',
-    redirectTo: `/order/${insertedOrderId}`
-};
-
-}catch(error){
-    if(isRedirectError(error))throw error;
-    return {success: false, message: formatError(error)}
-}
-}
-
-/* orderItems: cart.items.map(item => ({
-        userId: userId,
-        shippingAddress: user.address,
-        paymentMethod: user.paymentMethod,
-        itemsPrice: cart.itemsPrice,
-        shippingPrice: cart.shippingPrice,
-        taxPrice: cart.taxPrice,
-        totalPrice: cart.totalPrice, */
-
-    //get order by id
-    export async function getOrderById(orderId: string) {
-       const data = await prisma.order.findFirst({
-        where: {id: orderId},
-        include: {
-            orderitems: true,
-            user: {select: {name: true, email: true}}
-        }
+      return order.id;
     });
 
-    return convertToPlainObject(data);
-    }
+    if (!insertedOrderId) throw new Error('Order creation failed');
+    return { success: true, message: 'Order created successfully', redirectTo: `/order/${insertedOrderId}` };
 
-    //action to create order payment result
-    export async function createPayPalOrder(orderId: string){
-      try{
-        const order = await prisma.order.findFirst({where: {id: orderId}});
-        if(order){
-          //create paypal order
-          const paypalOrder = await paypal.createOrder(Number(order.totalPrice));
+  } catch (error) {
+    if (isRedirectError(error)) throw error;
+    return { success: false, message: formatError(error) };
+  }
+}
+//* Get order by ID
+export async function getOrderById(orderId: string) {
+  return convertToPlainObject(await prisma.order.findFirst({
+    where: { id: orderId },
+    include: { orderitems: true, user: { select: { name: true, email: true } } }
+  }));
+}
 
-          //update order with paypal order id
-          await prisma.order.update({
-            where: {id: orderId},
-            data: {PaymentResult: {paypalOrderId: paypalOrder.id, status: '', pricePaid: 0, email_address: ''}}
-          });
+export async function createPayPalOrder(orderId: string) {
+  try {
+    const order = await prisma.order.findFirst({ where: { id: orderId } });
+    if (!order) throw new Error('Order not found');
 
-           return {
-          success: true,
-          message: 'Payment processed successfully',
-          data: paypalOrder.id
-        }
-        }
-        else {
-          throw new Error('Order not found');
-        }
-      }catch(error){
-        return {success: false, message: formatError(error)}
-      }
-    }
+    const paypalOrder = await paypal.createOrder(Number(order.totalPrice));
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { PaymentResult: { paypalOrderId: paypalOrder.id, status: '', pricePaid: 0, email_address: '' } }
+    });
+
+    return { success: true, message: 'Payment processed successfully', data: paypalOrder.id };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}

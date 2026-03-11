@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-//convert prisma object into a regular js object function
+//convert prisma object into a regular js object function for usage
 export function convertToPlainObject<T>(data: T): T {
   return JSON.parse(JSON.stringify(data))
 }
@@ -66,9 +66,9 @@ else {
 }
 }
 
-//shorten the uuid
+//* Shorten the uuid
 export function formatId(id: string) {
-  return `..${id.substring(id.length - 6)}`;
+  return `..${id.substring(id.length - 6)}`;//last 6 characters
 }
 
 //format date and time 
