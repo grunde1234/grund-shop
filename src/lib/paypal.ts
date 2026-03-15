@@ -41,7 +41,7 @@ export const paypal = {
     }
 }
 
-//Generate access token
+//* Generate access token first
 async function generateAccessToken() {
     const {PAYPAL_CLIENT_ID, PAYPAL_APP_SECRET} = process.env;
     const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_APP_SECRET}`).toString('base64');//Authorization header
@@ -69,3 +69,18 @@ async function handleResponse(response: Response) {
 }
 
 export default generateAccessToken;
+
+/*const generateAccessToken = () => {
+  const { PAYPAL_CLIENT_ID, PAYPAL_APP_SECRET } = process.env;
+  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_APP_SECRET}`).toString('base64');
+
+  return fetch(`${base}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'grant_type=client_credentials'
+  })
+  .then(res => res.ok ? res.json() : res.text().then(err => { throw new Error(err) }))
+  .then(data => data.access_token);
+};
+
+export default generateAccessToken; */
