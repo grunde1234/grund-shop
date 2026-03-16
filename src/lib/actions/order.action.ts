@@ -10,9 +10,9 @@ import { insertOrderSchema } from "../validators";
 import { CartItem, PaymentResult } from "@/Zod-schemas";
 import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
-import { JsonArray } from "@prisma/client/runtime/library";
+/* import { JsonArray } from "@prisma/client/runtime/library";
 import { JsonValue } from "@/generated/prisma/runtime/library";
-
+ */
 export async function createOrder() {
   try {
     const session = await auth();
@@ -122,8 +122,8 @@ export async function createPayPalOrder(orderId: string) {
       where: { id: orderId },
       data: {
         PaymentResult: {
-          paypalOrderId: paypalOrder.id,
-          status: "",//will be filled when paymen is captured buy the user on the UI side
+          id: paypalOrder.id,
+          status: "",//will be filled when payment is captured or approved buy the user on the UI side
           pricePaid: 0,
           email_address: "",
         },
@@ -150,7 +150,7 @@ export async function approvePaypalOrder(
 
     if (!order) throw new Error("Order not found");
 
-    const captureData = await paypal.capturePayment(data.orderID);
+    const captureData = await paypal.capturePayment(data.orderID);//created by paypal that is the ID
 
     if (
       !captureData ||
@@ -169,7 +169,7 @@ export async function approvePaypalOrder(
         status: captureData.status,
         email_address: captureData.payer.email_address,
         pricePaid:
-          captureData.purchase_units[0]?.payments?.capture[0].amount?.value,
+          captureData.purchase_units[0]?.payments?.captures[0].amount?.value,
       },
     });
 

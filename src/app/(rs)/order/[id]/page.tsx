@@ -27,7 +27,7 @@ const OrderDetailsPage = async(props: {
         taxPrice: order.taxPrice.toString(),
         totalPrice: order.totalPrice.toString(),
         shippingAddress: order.shippingAddress as ShippingAddress
-    }} />
+    }} PaypalClientId={process.env.PAYPAL_CLIENT_ID || 'sb'} />
   )
 }
 

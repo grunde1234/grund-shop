@@ -13,7 +13,12 @@ import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
 import { Order } from "@/Zod-schemas";
 import Link from "next/link";
 import Image from "next/image";
-const OrderDetailsTable = ({ order }: { order: Order }) => {
+import {PayPalButtons,
+   PayPalScriptProvider,/*provides the SDK uses client id for paypal*/
+    usePayPalScriptReducer /* manage loading state of the button */} from '@paypal/react-paypal-js'
+import { createPayPalOrder, approvePaypalOrder } from "@/lib/actions/order.action";
+import { toast } from "sonner";
+const OrderDetailsTable = ({ order, PaypalClientId }: { order: Order, PaypalClientId: string }) => {
   const {
     id,
     shippingAddress,
@@ -28,6 +33,43 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
     isDelivered,
     deliveredAt,
   } = order;
+
+  const PrintLoadingState = () =>{
+    const [{isPending, isRejected}] = usePayPalScriptReducer();
+    let status = '';
+    if(isPending){
+      status = 'Loading Paypal...'
+    }else if(isRejected){
+      status = 'Error Loading Paypal'
+    }
+
+    return status;
+
+  };
+  //* Hnadle create
+  const handleCreatePayPalOrder = async() =>{
+    const res = await createPayPalOrder(order.id);
+
+    if(!res.success){
+      toast.error(res.message, {
+    style: {
+      background: '#ff4d4d', // A custom red background color
+      color: '#fff', // White text color
+      border: '1px solid #e60000', // A darker red border
+    },
+    className: 'my-custom-error-toast', // Add custom CSS class if needed
+  })
+    }
+
+    return res.data
+  }
+
+  //* Handle approve
+  const handleApprovePayPalOrder = async(data: {orderID: string;}) =>{
+    const res = await approvePaypalOrder(order.id, data);
+
+    toast(res.message);
+  }
   return (
     <>
       <h1 className="py-4 text-2xl">Order {formatId(id)}</h1>
@@ -123,8 +165,15 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
-              {/*                     <PlaceOrderForm/>
-               */}{" "}
+               {/* PAYPAL PAY */}
+               { !isPaid && paymentMethod === 'PayPal' && (
+                <div>
+                  <PayPalScriptProvider options={{clientId: PaypalClientId}}>
+                    <PrintLoadingState />
+                    <PayPalButtons createOrder={handleCreatePayPalOrder} onApprove={handleApprovePayPalOrder}/>
+                  </PayPalScriptProvider>
+                </div>
+               )}
             </CardContent>
           </Card>
         </div>
