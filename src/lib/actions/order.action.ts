@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 /* import { JsonArray } from "@prisma/client/runtime/library";
 import { JsonValue } from "@/generated/prisma/runtime/library";
  */
+import { PAGE_SIZE } from "../constants";
 export async function createOrder() {
   try {
     const session = await auth();
@@ -239,4 +240,32 @@ async function updateOrderToPaid({
   });
 
   if (!updatedOrder) throw new Error("Order not found");
+}
+
+//* Get all orders for a user with pagination
+export async function getMyOrders({
+  limit = PAGE_SIZE,
+  page 
+}:{
+limit?: number;
+page: number;
+}){
+const session = await auth();
+if(!session) throw new Error('User not authenticated');
+const data = await prisma.order.findMany({
+  where: {
+    userId: session?.user?.id
+  },
+  orderBy:{createdAt: 'desc'},
+  take: limit,
+  skip: (page - 1) * limit,
+})
+
+const dataCount = await prisma.order.count({
+  where: {
+    userId: session?.user?.id
+  }
+});
+
+return { data, totalPages: Math.ceil(dataCount / limit) };
 }
