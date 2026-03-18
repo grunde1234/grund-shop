@@ -1,43 +1,49 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function middleware(req: NextRequest) {
-  //Array of regex patterns of paths we want to protect
- /*  const protectedPaths = [
-    /\/shipping-address/,
-    /\/payment-method/,
-    /\/place-order/,
-    /\/profile/,
-    /\/user\/(.*)/,
-    /\/order\/(.*)/,
-    /\/admin/,
-  ]
-  //get pathname from the request url object
-  const {pathname} = req.nextUrl;
-  
-  //check if user is not authenticated and accessing a protected route or path
-  if(!auth && protectedPaths.some((p)=> p.test(pathname))) return false
-  */
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
+  // ---- AUTH PROTECTION ----
+  const protectedPaths = [
+    /^\/shipping-address/,
+    /^\/payment-method/,
+    /^\/place-order/,
+    /^\/profile/,
+    /^\/user(\/.*)?$/,
+    /^\/order(\/.*)?$/,
+    /^\/admin(\/.*)?$/,
+  ];
 
-  const sessionCartId = req.cookies.get("sessionCartId")?.value;
- 
-  // If no session cookie, create one
-  if (!sessionCartId) {
-    const newSessionId = crypto.randomUUID();
-    console.log("New cart session:", newSessionId);
+  const isProtected = protectedPaths.some((p) => p.test(pathname));
 
-    const response = NextResponse.next();
-
-    response.cookies.set("sessionCartId", newSessionId, {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+  if (isProtected) {
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
     });
 
+    if (!token) {
+      const signInUrl = new URL("/sign-in", req.url);
+      signInUrl.searchParams.set("callbackUrl", pathname); // redirect back after login
+      return NextResponse.redirect(signInUrl);
+    }
+  }
+
+  // ---- GUEST CART SESSION ----
+  const sessionCartId = req.cookies.get("sessionCartId")?.value;
+
+  if (!sessionCartId) {
+    const newSessionId = crypto.randomUUID();
+    const response = NextResponse.next();
+    response.cookies.set("sessionCartId", newSessionId, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
     return response;
   }
 
-  // Already has session
   return NextResponse.next();
 }
 

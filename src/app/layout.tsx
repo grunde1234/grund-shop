@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
-    template: `%s | prostore`,
+    template: `%s | Grundstore`,
     default: APP_NAME,
   },
   description: APP_DESCRIPTION,
