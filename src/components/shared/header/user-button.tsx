@@ -40,6 +40,19 @@ const UserButton = async() => {
                     <p className="text-xs leading-none text-muted-foreground">{session?.user?.email}</p>
                 </div>
             </DropdownMenuLabel>
+                {/* Profile */}
+            <DropdownMenuItem>
+                <Link href="/user/profile" className="w-full">
+                    <Button variant="ghost" className="w-full py-4 px-2 h-4 justify-start">User Profile</Button>
+                </Link>
+            </DropdownMenuItem>
+            {/* Order history */}
+            <DropdownMenuItem>
+                <Link href="/user/orders" className="w-full">
+                    <Button variant="ghost" className="w-full py-4 px-2 h-4 justify-start">My Orders</Button>
+                </Link>
+            </DropdownMenuItem>
+
             <DropdownMenuItem className="p-0 mb-1">
                 <form action={signOutUser} className="w-full">
                     <Button variant="ghost" className="w-full py-4 px-2 h-4 justify-start">Sign out</Button>

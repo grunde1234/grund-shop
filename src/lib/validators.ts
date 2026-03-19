@@ -81,7 +81,7 @@ export const insertOrderSchema = z.object({
     shippingPrice: currency,
     taxPrice: currency,
     totalPrice: currency,
-    paymentMethod: z.string().refine((data) => PAYMENT_METHODS.includes(data), { message: 'Invalid payment method' }),
+    paymentMethod: z.string().refine((data) => PAYMENT_METHODS.includes(data), { message: 'Invalid payment method' }),//.refine is for additional validation logic that is either true or false, in this case we check if the provided payment method is included in our predefined list of valid payment methods
     shippingAddress: shippingAddressSchema,
 });
 
