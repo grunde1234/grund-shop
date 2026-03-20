@@ -257,8 +257,8 @@ const data = await prisma.order.findMany({
     userId: session?.user?.id
   },
   orderBy:{createdAt: 'desc'},
-  take: limit,//or offset
-  skip: (page - 1) * limit,
+  take: limit,
+  skip: (page - 1) * limit,//* or offset
 })
 
 const dataCount = await prisma.order.count({

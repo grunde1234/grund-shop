@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import qs from 'query-string'
 /* import { number } from "zod";
  */
 export function cn(...inputs: ClassValue[]) {
@@ -110,3 +111,15 @@ export const formatDateTime = (dateString: Date) => {
     timeOnly: formattedTime,
   };
 };
+
+//* Form pagination links
+export function buildUrlQuery({params, key, value}:{params: string; key: string; value: string | null}){
+const query = qs.parse(params)
+
+//* To solve a problem
+query[key] = value;//* Turns to an object with the key as the page and the value as the page number but if the value is null it will remove the key from the query
+
+//* Stringify it to url
+return qs.stringifyUrl({url: window.location.pathname, query}, {skipNull: true});
+
+}
