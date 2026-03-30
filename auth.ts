@@ -63,7 +63,7 @@ export const config: NextAuthConfig = {
       return session;
     },
 
-    async jwt({ token, user, trigger }: any) {
+    async jwt({ token, user, trigger, session }: any) {
       // On sign in, attach user info to token
       if (user) {
         token.id = user.id;
@@ -110,6 +110,13 @@ export const config: NextAuthConfig = {
             console.error('cart merge error in jwt callback', e);
           }
         }
+      }
+
+
+      //Handle session name update
+      //* To update the name in the session after the user updates it in the profile page without having to sign out and sign in again, we check if the trigger is update and if there is a name in the session, then we update the name in the token which will be reflected in the session callback and then in the session
+      if(session?.user?.name && trigger === 'update'){
+        token.name = session.user.name;
       }
 
       return token;

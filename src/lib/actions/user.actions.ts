@@ -7,7 +7,8 @@ import { prisma } from "../../../db/prisma"
 import {formatError} from "../utils"
 import {ShippingAddress} from "@/Zod-schemas"
 import {shippingAddressSchema, paymentMethodSchema} from "@/lib/validators"
-import {z} from "zod"
+import {success, z} from "zod"
+import { updateProfileSchema } from "../validators"
 
 //sign in user with credentials
 export async function signinWithCredentials(prevState: unknown, formData: FormData) {
@@ -138,5 +139,33 @@ export async function updateUserPaymentMethod(data: z.infer<typeof paymentMethod
             success: false,
             message:formatError(error)
         }
+    }
+}
+
+//update the user profile
+export async function updateProfile(user: {name: string, email: string}) {
+    try{
+    const session = await auth();
+    const currentUser = await prisma.user.findFirst({
+    where:{id: session?.user?.id}
+    })
+
+    if(!currentUser) throw new Error('User not found');
+
+    await prisma.user.update({
+        where:{id: currentUser.id},
+        data:{name: user.name}//* ADDING EMAIL LATER ON
+    });
+
+    return {
+        success: true,
+        message: 'Profile update successful'
+    }
+
+    }catch(error){
+    return{
+        success: false,
+        message: formatError(error)
+    }
     }
 }
