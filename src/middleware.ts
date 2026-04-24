@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
     });
 
     if (!token) {
-      const signInUrl = new URL("/sign-in", req.url);
+      const signInUrl = new URL("/sign-in", req.url);//(destination path, base URL)
       signInUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(signInUrl);
     }
