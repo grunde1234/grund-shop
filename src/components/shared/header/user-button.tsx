@@ -1,67 +1,104 @@
-import Link from "next/link"
-import {auth} from "../../../../auth" /* To know if the user is login or not */
-import { signOutUser } from "@/lib/actions/user.actions"
-import { Button } from "@/components/ui/button"
-import { 
-    DropdownMenu, 
-    DropdownMenuContent, 
-    DropdownMenuItem, 
-    DropdownMenuLabel, 
-    DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { UserIcon } from "lucide-react"
+import Link from "next/link";
+import { auth } from "../../../../auth"; /* To know if the user is login or not */
+import { signOutUser } from "@/lib/actions/user.actions";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { UserIcon } from "lucide-react";
 
-const UserButton = async() => {
-    const session = await auth()
-    if(!session){
-      return(<Button variant="ghost" aria-label="" asChild>
-                      <Link href="/sign-in">
-                        <UserIcon />
-                        Sign in
-                      </Link>
-                    </Button>
-      )
-    }
+const UserButton = async () => {
+  const session = await auth();
+  if (!session) {
+    return (
+      <Button variant="ghost" aria-label="" asChild>
+        <Link href="/sign-in">
+          <UserIcon />
+          Sign in
+        </Link>
+      </Button>
+    );
+  }
 
- const firstInitial = session?.user?.name?.charAt(0).toUpperCase() ?? ' ';
+  const firstInitial = session?.user?.name?.charAt(0).toUpperCase() ?? " ";
   return (
     <div className="flex gap-2 items-center">
-    <DropdownMenu>
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
-            <div className="flex items-center">
-            <Button variant="ghost" className="h-8 w-8 rounded-full p-0 relative ml-2 flex items-center justify-center bg-gray-800 dark:bg-gray-700 text-white">
-                {firstInitial}
-            </Button>    
-            </div>
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              className="h-8 w-8 rounded-full p-0 relative ml-2 flex items-center justify-center bg-gray-800 dark:bg-gray-700 text-white"
+            >
+              {firstInitial}
+            </Button>
+          </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{session?.user?.email}</p>
-                </div>
-            </DropdownMenuLabel>
-                {/* Profile */}
-            <DropdownMenuItem>
-                <Link href="/user/profile" className="w-full">
-                    <Button variant="ghost" className="w-full py-4 px-2 h-4 justify-start">User Profile</Button>
-                </Link>
-            </DropdownMenuItem>
-            {/* Order history */}
-            <DropdownMenuItem>
-                <Link href="/user/orders" className="w-full">
-                    <Button variant="ghost" className="w-full py-4 px-2 h-4 justify-start">My Orders</Button>
-                </Link>
-            </DropdownMenuItem>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {session?.user?.name}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {session?.user?.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          {/* Profile */}
+          <DropdownMenuItem>
+            <Link href="/user/profile" className="w-full">
+              <Button
+                variant="ghost"
+                className="w-full py-4 px-2 h-4 justify-start"
+              >
+                User Profile
+              </Button>
+            </Link>
+          </DropdownMenuItem>
+          {/* Order history */}
+          <DropdownMenuItem>
+            <Link href="/user/orders" className="w-full">
+              <Button
+                variant="ghost"
+                className="w-full py-4 px-2 h-4 justify-start"
+              >
+                My Orders
+              </Button>
+            </Link>
+          </DropdownMenuItem>
 
-            <DropdownMenuItem className="p-0 mb-1">
-                <form action={signOutUser} className="w-full">
-                    <Button variant="ghost" className="w-full py-4 px-2 h-4 justify-start">Sign out</Button>
-                </form>
+          {session?.user?.role === "admin" ? (
+            <DropdownMenuItem>
+              <Link href="/admin/overview" className="w-full">
+                <Button
+                  variant="ghost"
+                  className="w-full py-4 px-2 h-4 justify-start"
+                >
+                  Admin
+                </Button>
+              </Link>
             </DropdownMenuItem>
+          ) : null}
+
+          <DropdownMenuItem className="p-0 mb-1">
+            <form action={signOutUser} className="w-full">
+              <Button
+                variant="ghost"
+                className="w-full py-4 px-2 h-4 justify-start"
+              >
+                Sign out
+              </Button>
+            </form>
+          </DropdownMenuItem>
         </DropdownMenuContent>
-    </DropdownMenu>
+      </DropdownMenu>
     </div>
-  )
-}
+  );
+};
 
-export default UserButton
+export default UserButton;
