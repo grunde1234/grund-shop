@@ -67,6 +67,13 @@ else {
 }
 }
 
+// Format Number
+const NUMBER_FORMATTER = new Intl.NumberFormat('en-US',{notation: 'compact'});
+
+export function formatNumberCompact(number:number){
+return NUMBER_FORMATTER.format(number);
+}
+
 //* Shorten the uuid
 export function formatId(id: string) {
   return `..${id.substring(id.length - 6)}`;//last 6 characters
