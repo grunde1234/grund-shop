@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import Charts from "./charts";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -30,6 +31,8 @@ const Overview = async () => {
   if (session?.user?.role !== "admin") {
     throw new Error("User not authorized");
   }
+
+  await requireAdmin();
 
   const summary = await getOrderSummary();
   //console.log(summary)

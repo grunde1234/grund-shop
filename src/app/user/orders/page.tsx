@@ -3,6 +3,7 @@ import { getMyOrders } from "@/lib/actions/order.action"
 import { formatCurrency, formatDateTime, formatId } from "@/lib/utils"
 import Pagination from "@/components/shared/pagination"
 import Link from "next/link"
+import {requireAdmin} from "@/lib/auth-guard"
 
 export const metadata = {
   title: 'My Orders'
@@ -10,7 +11,10 @@ export const metadata = {
 const OrderPage = async (props: {
   searchParams: Promise<{page: string}>
 }) => {
+
+  await requireAdmin()
   const {page} = await props.searchParams;
+
 
   const orders = await getMyOrders({
     page: Number(page) || 1
