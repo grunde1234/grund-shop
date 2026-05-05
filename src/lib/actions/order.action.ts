@@ -335,7 +335,7 @@ page: number;
 const data = await prisma.order.findMany({
   orderBy:{createdAt: 'desc'},
   take: limit,
-  skip:(page-1) * limit,
+  skip:(page-1) * limit,//* ok so i need to go to page 2 with 10 items per page so i need to skip the first 10 items and get the next 10 items so skip = (2-1) * 10 = 10
   include: {user: {select:{ name: true}}},
 });
 
@@ -344,5 +344,25 @@ const dataCount = await prisma.order.count()
 return {
   data,
   totalPages: Math.ceil(dataCount/limit)
+}
+}
+
+// Delete an admin order
+export async function deleteAdminOrder({ orderId }: { orderId: string }) {
+  try{
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+  });
+
+  if (!order) throw new Error("Order not found");
+
+  await prisma.order.delete({
+    where: { id: orderId },
+  });
+
+  revalidatePath("/admin/order");
+  return { success: true, message: "Order deleted successfully" };
+}catch(error){
+  return { success: false, message: formatError(error) };
 }
 }

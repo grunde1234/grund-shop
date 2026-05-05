@@ -1,10 +1,12 @@
+
 import { requireAdmin } from "@/lib/auth-guard";
-import { getAllOrders } from "@/lib/actions/order.action";
+import { deleteAdminOrder, getAllOrders } from "@/lib/actions/order.action";
 import type { Metadata } from "next";
 import { Table, TableHead, TableHeader, TableCell, TableBody, TableRow } from "@/components/ui/table";
 import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
 import Pagination from "@/components/shared/pagination";
-import { Link } from "lucide-react";
+import Link from "next/link";
+import DeleteDialog from "@/components/shared/delete-dialog";
 
 export const metadata: Metadata = {
   title: "Admin Orders",
@@ -47,7 +49,9 @@ const AdminOrdersPage = async (props: {
               <TableCell>{order.isPaid && order.paidAt ? formatDateTime(order.paidAt).dateTime : 'Not Paid For'}</TableCell>
               <TableCell>{order.isDelivered && order.deliveredAt ? formatDateTime(order.deliveredAt).dateTime : 'Not Delivered'}</TableCell>
               <TableCell>
-                <Link href={`/order/${order.id}`}><span className="px-2">Details</span></Link>
+                <Link href={`/order/${order.id}`}><span className="px-2">DETAILS</span></Link>
+                {/* DELETE */}
+                <DeleteDialog id={order.id} action={deleteAdminOrder.bind(null, { orderId: order.id })} />
               </TableCell>
             </TableRow>
           ))}
