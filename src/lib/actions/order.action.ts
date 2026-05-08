@@ -15,6 +15,7 @@ import { JsonValue } from "@/generated/prisma/runtime/library";
  */
 import { Prisma } from "@prisma/client";
 import { PAGE_SIZE } from "../constants";
+import { success } from "zod";
 export async function createOrder() {
   try {
     const session = await auth();
@@ -39,7 +40,7 @@ export async function createOrder() {
         message: "No payment method",
         redirectTo: "/payment-method",
       };
-      //? Parse whan sending to DB
+      //? Parse when sending to DB for manual validation so create order, update 
     const orderData = insertOrderSchema.parse({
       userId: user.id,
       itemsPrice: cart.itemsPrice,
@@ -62,7 +63,7 @@ export async function createOrder() {
               image,
               qty,
               price,
-            }),//map to pick the only needed fields if i put it directly it presents an error and destructionringy That's because this is a Prisma nested create. You're not creating one orderItem, you're telling Prisma: "Create this order AND create all these orderItems at the same time" So map is preparing that array of items for Prisma to batch create all at once.
+            }),//map to pick the only needed fields if i put it directly it presents an error and destructuring That's because this is a Prisma nested create. You're not creating one orderItem, you're telling Prisma: "Create this order AND create all these orderItems at the same time" So map is preparing that array of items for Prisma to batch create all at once.
           ),
         },
       });
@@ -365,4 +366,35 @@ export async function deleteAdminOrder({ orderId }: { orderId: string }) {
 }catch(error){
   return { success: false, message: formatError(error) };
 }
+}
+
+// Update the COD order to paid 
+export async function updateOrderToPaidCOD(orderId:string) {
+  try{
+    await updateOrderToPaid({orderId});
+    revalidatePath(`/order/${orderId}`);
+    return {success: true, message: 'Order marked as paid'}
+  }catch(error){
+    return {success: false, message: formatError(error)}
+  }
+}
+
+// Update the COD order to delivered
+
+export async function deliverOrder(orderId: string){
+  try{
+    const order = await prisma.order.findFirst({
+      where: { id: orderId },
+    })
+
+    if(!order) throw new Error('Order not found');
+    if(!order.isPaid) throw new Error('Order not paid yet');
+
+    await prisma.order.update({where: {id: orderId}, data: {isDelivered: true, deliveredAt: new Date()}})
+
+    revalidatePath(`/order/${orderId}`);
+    return {success: true, message: 'Order marked as delivered'}
+  }catch(error){
+    return {success: false, message: formatError(error)}
+  }
 }
