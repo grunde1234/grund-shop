@@ -103,7 +103,7 @@ const OrderDetailsTable = ({
             toast.success(res.message)
           }
         })}
-      >{isPaid ? <Loader2 className="animate-spin"/> : 'Mark As Paid'}</Button>
+      >{isPending ? <Loader2 className="animate-spin"/> : 'Mark As Paid'}</Button>
     );
   };
 
@@ -119,9 +119,11 @@ const OrderDetailsTable = ({
           const res = await deliverOrder(order.id)
           if(res.success){
             toast.success(res.message)
-          }
+          } else {
+          toast.error(res.message)
+        }
         })}
-      >{isPaid ? <Loader2 className="animate-spin"/> : 'Mark As Delivered'}</Button>
+      >{isPending ? (<Loader2 className="animate-spin"/>) : 'Mark As Delivered'}</Button>
     );
   };
 
