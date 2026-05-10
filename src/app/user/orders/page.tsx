@@ -15,7 +15,9 @@ const OrderPage = async (props: {
   await requireAdmin()
   const {page} = await props.searchParams;
 
-
+// URL: /orders          → searchParams = {}
+// URL: /orders?page=2   → searchParams = { page: "2" }
+// URL: /orders?page=5   → searchParams = { page: "5" }
   const orders = await getMyOrders({
     page: Number(page) || 1
   });

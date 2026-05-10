@@ -11,15 +11,15 @@ type PaginationProps = {
 }
 
 const Pagination = ({page, totalPages, urlParamName}: PaginationProps) => {
-    const router = useRouter();
+    const router = useRouter();//?UN
     const searchParams = useSearchParams();//* ??
-    const first = Number(page) <= 1 ? true : false
-    const last = Number(page) >= totalPages
+    const first = Number(page) <= 1 ? true : false;//?UN
+    const last = Number(page) >= totalPages;//?UN
 
     const handleClick = (btnType: string)=>{
         //*Number i want to go to next 
-        const pageValue = btnType === 'next' ? Number(page) + 1 : Number(page) - 1
-        const newUrl = buildUrlQuery({params: searchParams.toString(), key: urlParamName || 'page', value: pageValue.toString()});
+        const pageValue = btnType === 'next' ? Number(page) + 1 : Number(page) - 1 //?UN
+        const newUrl = buildUrlQuery({params: searchParams.toString(), key: urlParamName || 'page', value: pageValue.toString()});//?UN
 
         router.push(newUrl)
     }
