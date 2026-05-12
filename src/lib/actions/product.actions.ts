@@ -4,6 +4,8 @@
 import { prisma } from "../../../db/prisma";
 import { LATEST_PRODUCTS_LIMIT, PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
+import { Product, UpdateProduct } from "@/Zod-schemas";
+import { insertProductSchema, updateProductSchema } from "../validators";
 
 //Get products
 export async function getLatestProducts() {
@@ -72,4 +74,35 @@ export async function deleteProduct({ Id }: { Id: string }) {
 }catch(error){
   return { success: false, message: formatError(error) };
 }
+}
+
+// Create a product 
+export async function createProduct(data: Product){
+  try{
+    const product = insertProductSchema.parse(data);
+    await prisma.product.create({
+      data: product
+    })
+    revalidatePath('/admin/products');
+
+    return { success: true, message: "Product created successfully" };
+  }catch(error){
+     return { success: false, message: formatError(error) };
+  }
+}
+
+// Create a product 
+export async function updateProduct(data: UpdateProduct){
+  try{
+    const product = updateProductSchema.parse(data);
+    const productExists = await prisma.product.findF
+    await prisma.product.update({
+      data: product
+    })
+    revalidatePath('/admin/products');
+
+    return { success: true, message: "Product created successfully" };
+  }catch(error){
+     return { success: false, message: formatError(error) };
+  }
 }
