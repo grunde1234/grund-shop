@@ -95,13 +95,19 @@ export async function createProduct(data: Product){
 export async function updateProduct(data: UpdateProduct){
   try{
     const product = updateProductSchema.parse(data);
-    const productExists = await prisma.product.findF
+    const productExists = await prisma.product.findFirst({
+      where: {id: product.id}
+    })
+
+    if(!productExists) throw new Error('Product not found');
+
     await prisma.product.update({
-      data: product
+     where: {id: product.id},
+     data: product
     })
     revalidatePath('/admin/products');
 
-    return { success: true, message: "Product created successfully" };
+    return { success: true, message: "Product updated successfully" };
   }catch(error){
      return { success: false, message: formatError(error) };
   }
