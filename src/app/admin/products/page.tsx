@@ -52,7 +52,6 @@ const AdminProductsPage = async (props: {
             <TableHead>RATINGS</TableHead>
             <TableHead className="w-[100px]">ACTIONS</TableHead>
           </TableRow>
-          <TableBody>{/* All products will be listed here */}</TableBody>
         </TableHeader>
         <TableBody>
           {products.data.map((product) => (

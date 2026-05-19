@@ -6,6 +6,7 @@ import { LATEST_PRODUCTS_LIMIT, PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
 import { Product, UpdateProduct } from "@/Zod-schemas";
 import { insertProductSchema, updateProductSchema } from "../validators";
+import z from "zod";
 
 //Get products
 export async function getLatestProducts() {
@@ -77,7 +78,7 @@ export async function deleteProduct({ Id }: { Id: string }) {
 }
 
 // Create a product 
-export async function createProduct(data: Product){
+export async function createProduct(data: z.infer<typeof insertProductSchema>) {
   try{
     const product = insertProductSchema.parse(data);
     await prisma.product.create({
@@ -92,7 +93,7 @@ export async function createProduct(data: Product){
 }
 
 // Create a product 
-export async function updateProduct(data: UpdateProduct){
+export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
   try{
     const product = updateProductSchema.parse(data);
     const productExists = await prisma.product.findFirst({

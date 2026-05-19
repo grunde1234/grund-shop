@@ -33,6 +33,10 @@ import { productDefaultValues } from "@/lib/constants";
 import z from "zod";
 import slugify from "slugify";
 import { Textarea } from "../ui/textarea";
+import { createProduct, updateProduct } from "@/lib/actions/product.actions";
+import { UploadButton } from "@/lib/uploadthing";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import Image from "next/image";
 
 type props = {
   product?: Product;
@@ -42,6 +46,8 @@ type props = {
 
 const ProductForm = ({ product, type, productId }: props) => {
   const router = useRouter();
+
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof insertProductSchema>>({
     mode: "onBlur",
@@ -55,9 +61,47 @@ const ProductForm = ({ product, type, productId }: props) => {
   });
   //* ControllerRenderProps is type that allows us to spread input properties and use them in the ui
 
+  const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
+    values,
+  ) => {
+    if (type === "Create") {
+      const res = await createProduct(values);
+
+      if (!res.success) {
+        toast.error(res.message);
+      } else {
+        toast.success(res.message);
+      }
+      router.push("/admin/products");
+    }
+    // Update product
+    if (type === "Update") {
+      if (!productId) {
+        toast.error("Product ID is required for updating a product");
+        router.push("/admin/products");
+        return;
+      }
+
+      const res = await updateProduct({ ...values, id: productId }); //? the updateProduct function can handle both creating and updating a product because of the type of validation it has and the fact that the id field is optional in the updateProductSchema but required in the insertProductSchema
+
+      if (!res.success) {
+        toast.error(res.message);
+      } else {
+        toast.success(res.message);
+      }
+      router.push("/admin/products");
+    }
+  };
+
+  const images = form.watch("images");
+
   return (
     <Form {...form}>
-      <form className="space-y-8">
+      <form
+        method="POST"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8"
+      >
         <div className="flex flex-col md:flex-row gap-5">
           {/* Name */}
           <FormField
@@ -102,7 +146,12 @@ const ProductForm = ({ product, type, productId }: props) => {
                       variant="outline"
                       size="sm"
                       className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1 mt-2"
-                      onClick={()=> {form.setValue('slug', slugify(form.getValues('name'), {lower: true}))}}
+                      onClick={() => {
+                        form.setValue(
+                          "slug",
+                          slugify(form.getValues("name"), { lower: true }),
+                        );
+                      }}
                     >
                       Generate
                     </Button>
@@ -203,34 +252,83 @@ const ProductForm = ({ product, type, productId }: props) => {
         </div>
         <div className="upload-field flex flex-col md:gap-5">
           {/* images */}
+          <FormField
+            control={form.control}
+            name="images"
+            render={() => (
+              <FormItem className="w-full">
+                <FormLabel>Images</FormLabel>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Product Images</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 mt-2 min-h-48">
+                    <div className="flex-start space-x-2">
+                      {images.map((image: string) => (
+                        <Image
+                          key={image}
+                          src={image}
+                          alt="Product"
+                          className="w-20 h-20 object-cover rounded-sm"
+                          width={100}
+                          height={100}
+                        />
+                      ))}
+                      <FormControl>
+                        <UploadButton
+                          endpoint="imageUploader"
+                          onClientUploadComplete={(res: { url: string }[]) => {
+                            form.setValue("images", [...images, res[0].url]);
+                          }}
+                          onUploadError={(error: Error) => {
+                            toast.error(`Error ${error.message}`);
+                          }}
+                        />
+                      </FormControl>
+                    </div>
+                  </CardContent>
+                </Card>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <div className="upload-field">{/* isFeatured */}</div>
         <div>
-        {/* Description */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({
-            field,
-          }: {
-            field: ControllerRenderProps<
-              z.infer<typeof insertProductSchema>,
-              "description"
-            >;
-          }) => (
-            <FormItem className="w-full">
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Enter product description" {...field} className="resize-non"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          {/* Description */}
+          <FormField
+            control={form.control}
+            name="description"
+            render={({
+              field,
+            }: {
+              field: ControllerRenderProps<
+                z.infer<typeof insertProductSchema>,
+                "description"
+              >;
+            }) => (
+              <FormItem className="w-full">
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter product description"
+                    {...field}
+                    className="resize-non"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <div>
-        {/* submit */}
-          <Button type="submit" className="w-full" size="lg" disabled={form.formState.isSubmitting}>
+          {/* submit */}
+          <Button
+            type="submit"
+            className="w-full"
+            size="lg"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? "Submitting..." : `${type} Product`}
           </Button>
         </div>
