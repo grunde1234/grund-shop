@@ -1,10 +1,10 @@
 "use client"
 import { useState } from "react"
-//import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import Image from "next/image"
 
 const ProductImages= ({images}: {images: string[]}) => {
-  const [currentImage/* setCurrentImage */] = useState(images[0])
+  const [currentImage, setCurrentImage] = useState(images[0])
   return (
     <div>
       <div className="relative w-full h-[400px]">
@@ -15,7 +15,7 @@ const ProductImages= ({images}: {images: string[]}) => {
           className="object-contain"
         />
       </div>
-     {/*  <div className="flex gap-2 mt-2">
+      <div className="flex gap-2 mt-2">
         {images.map((image) => (
           <div
             key={image}
@@ -33,7 +33,7 @@ const ProductImages= ({images}: {images: string[]}) => {
             />
           </div>
         ))}
-      </div> */}
+      </div> 
     </div>
   )
 }
