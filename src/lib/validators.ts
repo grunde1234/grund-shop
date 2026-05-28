@@ -114,3 +114,11 @@ export const updateProfileSchema = z.object({
     name: z.string().min(3, 'Name must be atleast 3 characters'),
     email: z.string().min(3, 'Email must be atleast 3 characters')
 })
+
+// Schema for admin to update user role
+
+export const updateUserSchema = updateProfileSchema.extend({
+    id: z.string().min(1, 'User ID is required'),
+    role: z.string().min(1, 'Role is required')
+   /*  role: z.enum(['user', 'admin'], { message: 'Role must be either user or admin' }) */
+})
