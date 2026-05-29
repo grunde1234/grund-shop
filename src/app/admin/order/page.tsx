@@ -7,19 +7,22 @@ import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
 import Pagination from "@/components/shared/pagination";
 import Link from "next/link";
 import DeleteDialog from "@/components/shared/delete-dialog";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Admin Orders",
 };
 
 const AdminOrdersPage = async (props: {
-  searchParams: Promise<{ page: string }>;
+  searchParams: Promise<{ page: string; query: string;  category: string }>;
 }) => {
   await requireAdmin();
-  const { page = '1' } = await props.searchParams;
+  const { page = '1', query:searchText, category = '' } = await props.searchParams;
 
   const orders = await getAllOrders({
     page: Number(page),
+    query: searchText,
+    category
   });
   //* One page with 2 records as page = '1' and limit for records to display is 2
   /* const orders = await getAllOrders({
@@ -29,12 +32,25 @@ const AdminOrdersPage = async (props: {
   console.log(orders)  
   return  <div className="space-y-2">
       <h2 className="h2-bold">Orders</h2>
+      {
+        searchText && (
+          <div>
+            &nbsp;Filtered by <i>&quot;{searchText}&quot;</i>{' '}
+            <Link href="/admin/order" className="ml-2 text-sm">
+              <Button>
+                Clear filter
+              </Button>
+            </Link>
+          </div>
+        )
+      }
       <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Order ID</TableHead>
             <TableHead>Date</TableHead>
+            <TableHead>Buyer</TableHead>
             <TableHead>Total</TableHead>
             <TableHead>Paid</TableHead>
             <TableHead>Delivered</TableHead>
@@ -45,6 +61,7 @@ const AdminOrdersPage = async (props: {
             <TableRow key={order.id}>
               <TableCell>{formatId(order.id)}</TableCell>
               <TableCell>{formatDateTime(order.createdAt).dateTime}</TableCell>
+              <TableCell>{order.user.name}</TableCell>
               <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
               <TableCell>{order.isPaid && order.paidAt ? formatDateTime(order.paidAt).dateTime : 'Not Paid For'}</TableCell>
               <TableCell>{order.isDelivered && order.deliveredAt ? formatDateTime(order.deliveredAt).dateTime : 'Not Delivered'}</TableCell>

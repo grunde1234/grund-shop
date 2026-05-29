@@ -328,19 +328,27 @@ const salesData: SalesDataType[] = salesDataRaw.map((entry)=> ({
 // Get all orders for admin with pagination
 export async function getAllOrders({
   limit = PAGE_SIZE,
-  page
+  page,
+  query,
+  category
 }:{
 limit?: number;
 page: number;
+query: string;
+category?: string;
 }){
+const whereClause = {
+  ...(query ? { user: { name: { contains: query, mode: "insensitive" as const } } } : {}),
+}
 const data = await prisma.order.findMany({
+  where: whereClause,
   orderBy:{createdAt: 'desc'},
   take: limit,
   skip:(page-1) * limit,//* ok so i need to go to page 2 with 10 items per page so i need to skip the first 10 items and get the next 10 items so skip = (2-1) * 10 = 10
   include: {user: {select:{ name: true}}},
 });
 
-const dataCount = await prisma.order.count()
+const dataCount = await prisma.order.count({ where: whereClause });
 
 return {
   data,

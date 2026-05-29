@@ -11,6 +11,7 @@ import { success, z } from "zod";
 import { updateProfileSchema } from "../validators";
 import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 
 //sign in user with credentials
 export async function signinWithCredentials(
@@ -178,18 +179,24 @@ export async function updateProfile(user: { name: string; email: string }) {
 export async function getAllUsers({
   limit = PAGE_SIZE,
   page,
+  query
 }: {
   limit?: number;
   page: number;
+  query: string;
 }) {
   try {
+    const whereclause = {
+      ...(query ? { name: { contains: query, mode: "insensitive" as const } } : {}),
+    }
     const data = await prisma.user.findMany({
+      where: whereclause,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,
     });
 
-    const dataCount = await prisma.user.count();
+    const dataCount = await prisma.user.count({where: whereclause});
 
     return {
       data,

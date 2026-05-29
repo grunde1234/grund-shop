@@ -52,20 +52,25 @@ export async function getAllProducts({
   page: number;
   category?: string;
 }) {
+  const whereClause = {
+    ...(query ? { name: { contains: query, mode: "insensitive" as const } } : {}),
+    ...(category ? { category } : {}),
+  };
+
   const data = await prisma.product.findMany({
+    where: whereClause, // ✅ filter by query and category
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,
   });
 
-  const dataCount = await prisma.product.count();
+  const dataCount = await prisma.product.count({ where: whereClause }); // ✅ count only filtered results
 
-  return{
+  return {
     data,
-    totalPages: Math.ceil(dataCount/limit)
-  }
+    totalPages: Math.ceil(dataCount / limit),
+  };
 }
-
 
 // Delete an order for the Admin
 export async function deleteProduct({ Id }: { Id: string }) {
@@ -123,4 +128,3 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
      return { success: false, message: formatError(error) };
   }
 }
-
