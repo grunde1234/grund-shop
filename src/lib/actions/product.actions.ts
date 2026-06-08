@@ -128,3 +128,19 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
      return { success: false, message: formatError(error) };
   }
 }
+
+
+// Get all categories
+
+export async function getAllCategories(){
+  try{
+  const data = await prisma.product.groupBy({
+    by: ['category'],
+    _count: true
+  })
+
+  return data;
+  }catch(error){
+    return {success: false, message: formatError(error)}
+  }
+}

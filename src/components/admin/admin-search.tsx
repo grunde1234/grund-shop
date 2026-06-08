@@ -8,7 +8,7 @@ export default function AdminSearch() {
 
   const formActionUrl = pathname.includes('/admin/order')
     ? '/admin/order'
-    : pathname.includes('/admin/users')
+    : pathname.includes('/admin/usersz')
     ? '/admin/users'
     : '/admin/products';
 
