@@ -7,12 +7,12 @@ import ProductPrice from '@/components/shared/product/product-price'
 import ProductImages from '@/components/shared/product/product-images'
 import AddToCart from '@/components/shared/product/add-to-cart'
 import {getMyCart} from "@/lib/actions/cart.action"
-import {requireAdmin} from "@/lib/auth-guard"
+//import {requireAdmin} from "@/lib/auth-guard"
 
 async function ProductDetailPage(props: {
     params: Promise<{slug: string}>
 }) {
-    await requireAdmin()
+    //await requireAdmin()
     const {slug} = await props.params
     const product = await getProductBySlug(slug);
     if(!product)notFound();
