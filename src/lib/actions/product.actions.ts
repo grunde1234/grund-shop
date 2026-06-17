@@ -4,7 +4,7 @@
 import { prisma } from "../../../db/prisma";
 import { LATEST_PRODUCTS_LIMIT, PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
-import { Product, UpdateProduct } from "@/Zod-schemas";
+//import { Product, UpdateProduct } from "@/Zod-schemas";
 import { insertProductSchema, updateProductSchema } from "../validators";
 import z from "zod";
 
@@ -132,15 +132,15 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
 
 // Get all categories
 
-export async function getAllCategories(){
-  try{
-  const data = await prisma.product.groupBy({
-    by: ['category'],
-    _count: true
-  })
+export async function getAllCategories() {
+  try {
+    const data = await prisma.product.groupBy({
+      by: ['category'],
+      _count: true,
+    });
 
-  return data;
-  }catch(error){
-    return {success: false, message: formatError(error)}
+    return { success: true as const, data };
+  } catch (error) {
+    return { success: false as const, message: formatError(error) };
   }
 }
