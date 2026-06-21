@@ -45,16 +45,25 @@ export async function getAllProducts({
   query,
   limit = PAGE_SIZE,
   page,
+  price,
+  rating,
+  sort,
   category,
 }: {
   query: string;
   limit?: number;
   page: number;
+  price?: string;
+  rating?: string;
+  sort?: string
   category?: string;
 }) {
   const whereClause = {
     ...(query ? { name: { contains: query, mode: "insensitive" as const } } : {}),
     ...(category ? { category } : {}),
+    ...(sort ? { sort } : {}),
+    ...(price ? { price } : {}),
+    ...(rating ? { rating } : {}),
   };
 
   const data = await prisma.product.findMany({
@@ -139,7 +148,7 @@ export async function getAllCategories() {
       _count: true,
     });
 
-    return { success: true as const, data };
+    return { success: true as const, data };//* Remember to narrow down
   } catch (error) {
     return { success: false as const, message: formatError(error) };
   }

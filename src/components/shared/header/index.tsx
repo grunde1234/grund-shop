@@ -4,6 +4,7 @@ import { APP_NAME } from '@/lib/constants'
 import Menu from '@/components/shared/header/menu'
 import logo from '../../../../public/logo.png'
 import CategoryDrawer from './category-drawer'
+import Search from './search'
 
 const Header = () => {
   return (
@@ -15,6 +16,9 @@ const Header = () => {
                 <Image className='rounded-md' src={logo} alt={APP_NAME} height={54} width={54} priority={true}/>
                 <span className='hidden lg:block font-bold text-2xl ml-3'>{APP_NAME}</span>
                 </Link>
+            </div>
+            <div className='hidden md:block'>
+              <Search />
             </div>
             <Menu />
         </div>
