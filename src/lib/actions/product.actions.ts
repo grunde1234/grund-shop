@@ -55,25 +55,41 @@ export async function getAllProducts({
   page: number;
   price?: string;
   rating?: string;
-  sort?: string
+  sort?: string;
   category?: string;
 }) {
+  // 1. WHERE — only real filterable columns go here
   const whereClause = {
     ...(query ? { name: { contains: query, mode: "insensitive" as const } } : {}),
-    ...(category ? { category } : {}),
-    ...(sort ? { sort } : {}),
-    ...(price ? { price } : {}),
-    ...(rating ? { rating } : {}),
+    ...(category && category !== "all" ? { category } : {}),
+    ...(rating && rating !== "all" ? { rating: { gte: Number(rating) } } : {}),
+    ...(price && price !== "all"
+      ? (() => {
+          const [min, max] = price.split("-").map(Number);
+          return { price: { gte: min, lte: max } };
+        })()
+      : {}),
   };
 
+  // 2. ORDER BY — sort is its own argument, not a filter
+  const orderByClause =
+    sort === "lowest"
+      ? { price: "asc" as const }
+      : sort === "highest"
+        ? { price: "desc" as const }
+        : sort === "rating"
+          ? { rating: "desc" as const }
+          : { createdAt: "desc" as const };
+
+  // 3. Pass them as SEPARATE arguments to the query object
   const data = await prisma.product.findMany({
-    where: whereClause, // ✅ filter by query and category
-    orderBy: { createdAt: "desc" },
+    where: whereClause,
+    orderBy: orderByClause,
     take: limit,
     skip: (page - 1) * limit,
   });
 
-  const dataCount = await prisma.product.count({ where: whereClause }); // ✅ count only filtered results
+  const dataCount = await prisma.product.count({ where: whereClause });
 
   return {
     data,
