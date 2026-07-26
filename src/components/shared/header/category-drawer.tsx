@@ -37,5 +37,6 @@ const CategoryDrawer = async() => {
     </Drawer>
   )
 }
+/* TESTING */
 
 export default CategoryDrawer
