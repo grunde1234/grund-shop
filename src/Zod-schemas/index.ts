@@ -8,7 +8,8 @@ shippingAddressSchema,
 insertOrderSchema,
 orderItemSchema,
 paymentResultSchema,
-updateProfileSchema
+updateProfileSchema,
+updateUserSchema
  } from "@/lib/validators";
 
 

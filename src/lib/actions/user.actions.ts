@@ -5,10 +5,9 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { hashSync } from "bcrypt-ts-edge";
 import { prisma } from "../../../db/prisma";
 import { formatError } from "../utils";
-import { ShippingAddress } from "@/Zod-schemas";
+import { ShippingAddress, profileUpdate } from "@/Zod-schemas";
 import { shippingAddressSchema, paymentMethodSchema } from "@/lib/validators";
 import { success, z } from "zod";
-import { updateProfileSchema } from "../validators";
 import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
@@ -148,7 +147,7 @@ export async function updateUserPaymentMethod(
 }
 
 //update the user profile
-export async function updateProfile(user: { name: string; email: string }) {
+export async function updateProfile(data: profileUpdate) {
   try {
     const session = await auth();
     const currentUser = await prisma.user.findFirst({
@@ -156,10 +155,13 @@ export async function updateProfile(user: { name: string; email: string }) {
     });
 
     if (!currentUser) throw new Error("User not found");
+    
+    const newData = updateUserSchema.safeParse(data)
+
 
     await prisma.user.update({
       where: { id: currentUser.id },
-      data: { name: user.name }, //* ADDING EMAIL LATER ON
+      data: { name: newData.data?.name }, //* ADDING EMAIL LATER ON
     });
 
     return {

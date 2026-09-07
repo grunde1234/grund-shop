@@ -60,7 +60,7 @@ export async function getAllProducts({
 }) {
   // 1. WHERE — only real filterable columns go here
   const whereClause = {
-    ...(query ? { name: { contains: query, mode: "insensitive" as const } } : {}),
+    ...(query && query !== "all" ? { name: { contains: query, mode: "insensitive" as const } } : {}),
     ...(category && category !== "all" ? { category } : {}),
     ...(rating && rating !== "all" ? { rating: { gte: Number(rating) } } : {}),
     ...(price && price !== "all"
