@@ -339,6 +339,7 @@ category?: string;
 }){
 const whereClause = {
   ...(query ? { user: { name: { contains: query, mode: "insensitive" as const } } } : {}),
+ /*  ...(category ? { orderitems: { some: { name: { contains: category, mode: "insensitive" as const } } } } : {}), */
 }
 const data = await prisma.order.findMany({
   where: whereClause,
@@ -360,7 +361,7 @@ return {
 export async function deleteAdminOrder({ orderId }: { orderId: string }) {
   try{
   const order = await prisma.order.findUnique({
-    where: { id: orderId },
+    where: { id: orderId }, //* Not really needed
   });
 
   if (!order) throw new Error("Order not found");

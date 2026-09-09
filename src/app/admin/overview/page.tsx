@@ -42,7 +42,7 @@ const Overview = async () => {
   return (
     <div className="space-y-2">
       <h1 className="h2-bold">Dashboard</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">{/* ??? standard class for overview */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total revenue</CardTitle>
@@ -93,7 +93,7 @@ const Overview = async () => {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">{/* standard class */}
         <Card className="col-span-4">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
