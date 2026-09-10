@@ -132,7 +132,7 @@ export async function createProduct(data: z.infer<typeof insertProductSchema>) {
   }
 }
 
-// Create a product 
+// update a product 
 export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
   try{
     const product = updateProductSchema.parse(data);

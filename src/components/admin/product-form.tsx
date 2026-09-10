@@ -48,7 +48,7 @@ type props = {
 const ProductForm = ({ product, type, productId }: props) => {
   const router = useRouter();
 
-  const [isPending, startTransition] = useTransition();
+ // const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof insertProductSchema>>({
     mode: "onBlur",
@@ -373,5 +373,6 @@ const ProductForm = ({ product, type, productId }: props) => {
     </Form>
   );
 };
-
+/* type UploadResult = { url: string };
+const onClientUploadComplete = (res: UploadResult[]) => { ... } */
 export default ProductForm;
