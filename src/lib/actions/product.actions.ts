@@ -20,7 +20,7 @@ export async function getLatestProducts() {
     },
   });
 
-  return convertToPlainObject(data); //gives out a typescript object and not a js so it needs to be converted to normal js object
+  return convertToPlainObject(data); //* gives out a typescript object and not a js so it needs to be converted to normal js object
 }
 
 //get single data by the slug
@@ -37,7 +37,7 @@ export async function getProductById(productId: string) {
   });
   console.log(data)
 
-  return convertToPlainObject(data)
+  return convertToPlainObject(data) //* so that it is a plain js object not prisma object
 }
 
 //Get all productss

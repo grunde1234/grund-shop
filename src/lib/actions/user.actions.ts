@@ -236,20 +236,26 @@ export async function deleteUser(id: string) {
 // Update a user by ID
 export async function updateUser(user: z.infer<typeof updateUserSchema>) {
   try {
+    const getUser = updateUserSchema.safeParse(user);
+
+    if (!getUser.success) {
+      return {
+        success: false,
+        message: formatError(getUser.error),
+      };
+    }
+
     await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        name: user.name,
-        role: user.role,
-      },
+      where: { id: getUser.data.id },
+      data: { name: getUser.data.name, email: getUser.data.email },
     });
+
     revalidatePath('/admin/users');
     return {
       success: true,
       message: "User updated successfully",
     };
-  }
-    catch (error) {
+  } catch (error) {
     return {
       success: false,
       message: formatError(error),

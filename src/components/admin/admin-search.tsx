@@ -8,7 +8,7 @@ export default function AdminSearch() {
 
   const formActionUrl = pathname.includes('/admin/order')
     ? '/admin/order'
-    : pathname.includes('/admin/usersz')
+    : pathname.includes('/admin/users')
     ? '/admin/users'
     : '/admin/products';
 
@@ -19,7 +19,7 @@ export default function AdminSearch() {
         placeholder="Search..."
         name="query"
         defaultValue={searchParams.get('query') ?? ''}
-        className="md:w-[100px] lg:w-[300px]"
+        className="md:w-25 lg:w-75"
       />
       <button className="sr-only" type="submit">Search</button>
     </form>
