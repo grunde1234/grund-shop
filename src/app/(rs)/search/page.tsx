@@ -5,6 +5,25 @@ import React from 'react'
 const SearchPage = async(props:{searchParams: Promise<{q?:string; category: string; price?: string; rating?: string; sort?: string, page?: string}>}) => {
  const {q = 'all', category='all', price='all', rating='all', sort='newest', page='1'} = await props.searchParams;
 
+/* Construct a filter Url */
+const getFilterUrl = ({
+c,
+s,
+p,
+r,
+pg
+}:{c?: string, s?: string, p?: string, r?: string, pg?: string}) =>{
+const params = {
+q, category, price, sort, page, rating}//* Exists
+
+if(c) params.category = c
+if(s) params.sort = s
+if(p) params.price = p
+if(r) params.rating = r
+if(pg) params.page = pg
+
+return `/search?${new URLSearchParams(params).toString()}`
+}
  const products = await getAllProducts(
     {query: q,
     category,
@@ -17,6 +36,8 @@ const SearchPage = async(props:{searchParams: Promise<{q?:string; category: stri
     <div className='grid md:grid-cols-5 md:gap-5'>
         <div className='filter-links'>
             {/* FILTERS */}
+           {/*  URL :{getFilterUrl({})} */}
+           
         </div>
         <div className='space-y-4 md:col-span-4'>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

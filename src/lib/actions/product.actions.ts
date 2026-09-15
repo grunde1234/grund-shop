@@ -62,7 +62,7 @@ export async function getAllProducts({
   const whereClause = {
     ...(query && query !== "all" ? { name: { contains: query, mode: "insensitive" as const } } : {}),
     ...(category && category !== "all" ? { category } : {}),
-    ...(rating && rating !== "all" ? { rating: { gte: Number(rating) } } : {}),
+   /*  ...(rating && rating !== "all" ? { rating: { gte: Number(rating) } } : {}), */
     ...(price && price !== "all"
       ? (() => {
           const [min, max] = price.split("-").map(Number);
@@ -70,7 +70,7 @@ export async function getAllProducts({
         })()
       : {}),
   };
-
+  console.log(whereClause, "whereClause");
   // 2. ORDER BY — sort is its own argument, not a filter
   const orderByClause =
     sort === "lowest"
