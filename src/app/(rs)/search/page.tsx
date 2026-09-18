@@ -13,7 +13,14 @@ const prices = [
   { name: "$201 to $1000", value: "201-1000" },
 ];
 
-const ratings = [4,3,2,1];
+const ratings = [4, 3, 2, 1];
+
+const sortOrders = [
+  { name: "Newest Arrivals", value: "newest" },
+  { name: "Low to High", value: "lowest" },
+  { name: "High to Low", value: "highest" },
+  { name: "Customer Review", value: "rating" },
+];
 const SearchPage = async (props: {
   searchParams: Promise<{
     q?: string;
@@ -74,7 +81,7 @@ const SearchPage = async (props: {
   });
 
   const categories = await getAllCategories();
-  
+
   if (!categories.success) return null;
   return (
     <div className="grid md:grid-cols-5 md:gap-5">
@@ -111,8 +118,8 @@ const SearchPage = async (props: {
           <ul className="space-y-1">
             <li>
               <Link
-                className={`${rating === 'all' && "font-bold"}`}
-                href={getFilterUrl({ r: "all" })}//*any link
+                className={`${rating === "all" && "font-bold"}`}
+                href={getFilterUrl({ r: "all" })} //*any link
               >
                 Any
               </Link>
@@ -135,8 +142,8 @@ const SearchPage = async (props: {
           <ul className="space-y-1">
             <li>
               <Link
-                className={`${price === 'all' && "font-bold"}`}
-                href={getFilterUrl({ p: "all" })}//*any link
+                className={`${price === "all" && "font-bold"}`}
+                href={getFilterUrl({ p: "all" })} //*any link
               >
                 Any
               </Link>
@@ -153,24 +160,43 @@ const SearchPage = async (props: {
             ))}
           </ul>
         </div>
-        
       </div>
       <div className="space-y-4 md:col-span-4">
         <div className="flex-between flex-col md:flex-row my-4">
           <div className="flex items-center">
-            {q !== 'all' && q !== '' && 'Query: ' + q}{/* Q as the query parameter */}
-            {category !== 'all' && category !== '' && ' Category: ' + category}
-            {rating !== 'all' && rating !== '' && ' Rating: ' + rating + ' & up'}
-            {price !== 'all' && price !== '' && ' Price: ' + price}
+            {q !== "all" && q !== "" && "Query: " + q}
+            {/* Q as the query parameter */}
+            {category !== "all" && category !== "" && " Category: " + category}
+            {rating !== "all" &&
+              rating !== "" &&
+              " Rating: " + rating + " & up"}
+            {price !== "all" && price !== "" && " Price: " + price}
             &nbsp;
-            {(q !== 'all' && q !== '') || (category !== 'all' && category !== '') || (rating !== 'all' && rating !== '') || (price !== 'all' && price !== '') ? (
-              <Button variant={'link'} className="px-4 py-2 text-sm font-semibold ml-60" asChild>
-               <Link href="/search">Clear</Link>
+            {(q !== "all" && q !== "") ||
+            (category !== "all" && category !== "") ||
+            (rating !== "all" && rating !== "") ||
+            (price !== "all" && price !== "") ? (
+              <Button
+                variant={"link"}
+                className="px-4 py-2 text-sm font-semibold"
+                asChild
+              >
+                <Link href="/search">Clear</Link>
               </Button>
             ) : null}
           </div>
           <div>
             {/* SORTING */}
+            Sort by{" "}
+            {sortOrders.map((order) => (
+              <Link
+                key={order.value}
+                className={`mx-2 ${sort === order.value && "font-bold"}`}
+                href={getFilterUrl({ s: order.value })}
+              >
+                {order.name}
+              </Link>
+            ))}
           </div>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
