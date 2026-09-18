@@ -62,12 +62,12 @@ export async function getAllProducts({
   const whereClause = {
     ...(query && query !== "all" ? { name: { contains: query, mode: "insensitive" as const } } : {}),
     ...(category && category !== "all" ? { category } : {}),
-   /*  ...(rating && rating !== "all" ? { rating: { gte: Number(rating) } } : {}), */
+    ...(rating && rating !== "all" ? { rating: { gte: Number(rating) } } : {}), 
     ...(price && price !== "all"
-      ? (() => {
+      ? () => {
           const [min, max] = price.split("-").map(Number);
           return { price: { gte: min, lte: max } };
-        })()
+        }
       : {}),
   };
   console.log(whereClause, "whereClause");
