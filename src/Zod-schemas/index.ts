@@ -8,7 +8,8 @@ shippingAddressSchema,
 insertOrderSchema,
 orderItemSchema,
 paymentResultSchema,
-updateProfileSchema
+updateProfileSchema,
+insertReviewScema
  } from "@/lib/validators";
 
 
@@ -49,3 +50,9 @@ export type PaymentResult = z.infer<typeof paymentResultSchema>;
 export type profileUpdate = z.infer<typeof updateProfileSchema>;
 
 export type UpdateProduct = z.infer<typeof updateProductSchema>;
+
+export type Review = z.infer<typeof insertReviewScema> & {
+    id: string,
+    createdAt: Date;
+    user?: {name: string}
+}

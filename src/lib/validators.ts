@@ -1,8 +1,9 @@
 import {z} from 'zod'
 import { formatNumber } from './utils'
 import {PAYMENT_METHODS} from '@/lib/constants/index'
+import { title } from 'process'
 
-const currency =  z.string().refine((val)=> /^\d+(\.\d{2})?$/.test(formatNumber(Number(val))) , 'Invalid price format')
+const currency =  z.string().refine((val)=> /^\d+(\.\d{2})?$/.test(formatNumber(Number(val))) , 'Invalid price format')//the val sent has to be a string and it has to match the regex pattern for a valid price format, which is a number with up to two decimal places. The formatNumber function is used to format the number before testing it against the regex pattern. If the value does not match the pattern, an error message "Invalid price format" will be returned.
 
 //schema for inserting products
 export const insertProductSchema = z.object({
@@ -122,3 +123,16 @@ export const updateUserSchema = updateProfileSchema.extend({
     role: z.string().min(1, 'Role is required')
    /*  role: z.enum(['user', 'admin'], { message: 'Role must be either user or admin' }) */
 })
+
+//Schema to insert reviews
+export const insertReviewScema = z.object({
+    title: z.string().min(3, "Title must be atleast 3 characters"),
+    description: z.string().min(3, "Description must be atleast 3 characters"),
+    productId: z.string().min(1, "Product is required"),
+    userId: z.string().min(1, "User is required"),
+    rating: z.coerce
+       .number()
+       .int()
+       .min(1, "Rating must be at least 1")
+       .max(5, "Rating must be at most 5")
+});
