@@ -13,7 +13,6 @@ import { revalidatePath } from "next/cache";
 /* import { JsonArray } from "@prisma/client/runtime/library";
 import { JsonValue } from "@/generated/prisma/runtime/library";
  */
-import { Prisma } from "@prisma/client";
 import { PAGE_SIZE } from "../constants";
 import { success } from "zod";
 export async function createOrder() {
