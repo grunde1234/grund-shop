@@ -9,7 +9,7 @@ insertOrderSchema,
 orderItemSchema,
 paymentResultSchema,
 updateProfileSchema,
-insertReviewScema
+insertReviewSchema
  } from "@/lib/validators";
 
 
@@ -51,7 +51,7 @@ export type profileUpdate = z.infer<typeof updateProfileSchema>;
 
 export type UpdateProduct = z.infer<typeof updateProductSchema>;
 
-export type Review = z.infer<typeof insertReviewScema> & {
+export type Review = z.infer<typeof insertReviewSchema> & {
     id: string,
     createdAt: Date;
     user?: {name: string}
