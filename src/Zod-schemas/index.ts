@@ -15,6 +15,7 @@ insertReviewSchema
 
 export type Product = z.infer<typeof insertProductSchema> & {
     id: string, //* HTis was not used because of the id and when creationg the id is does not exist as a field
+    numReviews: number,
     rating: string,
     createdAt: Date
 }

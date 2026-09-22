@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import ProductPrice from "./product-price";
 import { Product } from "@/Zod-schemas/index";
+import Rating from "./rating";
 
 type Props = {
   product: Product;
@@ -27,7 +28,7 @@ const ProductCard = ({ product }: Props) => {
           <h1 className="text-sm font-medium"> {product.name} </h1>
         </Link>
         <div className="flex-between gap-4">
-          <p>{product.rating} Stars</p>
+          <Rating value={Number(product.numReviews)} />
           {product.stock > 0 ? (
             <ProductPrice value={Number(product.price)} className="" />
           ) : (
