@@ -97,7 +97,7 @@ export async function getReviews({productId}: {productId: string}) {
   return {data};
 }
 
-//GET REVIEW WRITTEN BY THE CURRENT USER
+//GET REVIEW WRITTEN BY THE CURRENT USER FORM
 export async function getReviewByProductId({productId}: {productId: string}){
  const session = await auth();
 

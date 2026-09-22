@@ -1,14 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Review } from "@/Zod-schemas";
 import Link from "next/link";
 import ReviewForm from "./review-form";
 import { getReviews } from "@/lib/actions/review.actions";
-import { useEffect } from "react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card'
 import { Calendar, User } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import Rating from "@/components/shared/product/rating";
+import { useRouter } from "next/navigation";
 
 type props = {
   userId: string;
@@ -20,6 +20,7 @@ const ReviewList = ({ userId, productId, productSlug }: props) => {
   //console.log(userId, productId, productSlug);
 
   const [reviews, setReviews] = useState<Review[]>([]);
+  const router = useRouter()
 
   useEffect(()=>{
     const loadReviews = async()=>{
@@ -31,9 +32,11 @@ const ReviewList = ({ userId, productId, productSlug }: props) => {
 
     loadReviews();
   },[productId])
-
-  const reload = () =>{
-    console.log('review submitted');
+  /* RELOAD AFTER CREATE OR UPDATE */
+  const reload = async () =>{
+    const res = await getReviews({productId});
+    setReviews([...res.data]);
+    router.refresh();
   }
   return (
     <div className="space-y-4">
