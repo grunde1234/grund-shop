@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { toast } from 'sonner'
-import { useForm } from "react-hook-form"
+import { useForm, SubmitHandler } from "react-hook-form"
 import { insertReviewSchema } from "@/lib/validators"
 import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -13,23 +13,46 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { StarIcon } from "lucide-react"
+import { createUpdateReview } from "@/lib/actions/review.actions"
+
 
 type props = {
     userId: string,
     productId: string,
-    onReviewSubmitted?: () => void
+    onReviewSubmitted: () => void
 }
 const ReviewForm = ({userId, productId, onReviewSubmitted}: props) => {
 
  const [open, setOpen] = useState(false);
 
+ /*  */
  const form = useForm<z.input<typeof insertReviewSchema>, unknown, z.output<typeof insertReviewSchema>>({
  resolver: zodResolver(insertReviewSchema),
  defaultValues: reviewFormDefaultValues
  });
 
+
+ /* OPEN FORM ACTION */
  const handleOpenForm = () =>{
+  form.setValue('productId', productId);
+  form.setValue('userId', userId)
   setOpen(true)
+ };
+
+/* SUBMIT FORM ACTION */
+ const onSubmit: SubmitHandler<z.infer<typeof insertReviewSchema>> = async(values) =>{
+  const res = await createUpdateReview({...values, productId});
+  
+  if (!res.success) {
+      toast.error(res.message);
+      return;
+    }
+
+    setOpen(false);
+
+    onReviewSubmitted();
+
+    toast.success(res.message)
  }
 
 
@@ -40,7 +63,7 @@ const ReviewForm = ({userId, productId, onReviewSubmitted}: props) => {
       </Button>
       <DialogContent className='sm:max-w-[425px]'>
         <Form {...form}>
-          <form method="POST">
+          <form method="POST" onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle>
                 Write a review
@@ -75,7 +98,6 @@ const ReviewForm = ({userId, productId, onReviewSubmitted}: props) => {
                 </FormItem>
               )} />
               {/* RATING */}
-                            {/* RATING */}
               <FormField
               control={form.control}
               name="rating"
