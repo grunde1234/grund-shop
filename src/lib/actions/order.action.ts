@@ -114,7 +114,7 @@ export async function getOrderById(orderId: string) {
   );
 }
 
-//creating order in the DB
+//*creating order in the DB
 export async function createPayPalOrder(orderId: string) {
   try {
     const order = await prisma.order.findFirst({ where: { id: orderId } });

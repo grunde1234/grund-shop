@@ -28,15 +28,18 @@ import { toast } from "sonner";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import StripePayment from "./stripe-payment";
 
 const OrderDetailsTable = ({
   order,
   PaypalClientId,
   isAdmin,
+  stripeClientSecret
 }: {
   order: Order;
   PaypalClientId: string;
   isAdmin: boolean;
+  stripeClientSecret: string | null;
 }) => {
   const {
     id,
@@ -234,6 +237,14 @@ const OrderDetailsTable = ({
                   </PayPalScriptProvider>
                 </div>
               )}
+
+              {/* Stripe payment */}
+
+              {
+                !isPaid && paymentMethod === 'Stripe' && stripeClientSecret &&(
+                  <StripePayment priceInCents={Math.round(Number(totalPrice) * 100)} orderId={id} client_secret={stripeClientSecret} />
+                )
+              }
 
               {/* Cash on delivery */}
               {isAdmin && !isPaid && paymentMethod === "CashOnDelivery" && (

@@ -8,6 +8,7 @@ import { notFound } from "next/navigation"
 import OrderDetailsTable from './order-details-table'
 import { ShippingAddress } from "@/Zod-schemas"
 import { auth } from "../../../../../auth"
+import Stripe from "stripe"
 
 
 const OrderDetailsPage = async(props: {
@@ -23,6 +24,22 @@ const OrderDetailsPage = async(props: {
 
     const session = await auth();
 
+    let client_secret = null
+
+    //Check if is not paid and using stripe
+    if(order.paymentMethod && !order.isPaid){
+        //Init stripe instance
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+        //Create a payment intent
+        const paymentIntent = await stripe.paymentIntents.create(
+        {
+            amount: Math.round(Number(order.totalPrice) * 100), // Convert to cents
+            currency: 'USD',
+            metadata: {orderId: order.id}
+        });
+
+        client_secret = paymentIntent.client_secret;
+    }
 
   return (
     <OrderDetailsTable order={{/* like this cause it has to resemble the model object for shipping */
@@ -32,8 +49,10 @@ const OrderDetailsPage = async(props: {
         taxPrice: order.taxPrice.toString(),
         totalPrice: order.totalPrice.toString(),
         shippingAddress: order.shippingAddress as ShippingAddress
-    }} PaypalClientId={process.env.PAYPAL_CLIENT_ID || 'sb'}
-        isAdmin={session?.user?.role === 'admin' || false} />
+    }} 
+    stripeClientSecret={client_secret}
+    PaypalClientId={process.env.PAYPAL_CLIENT_ID || 'sb'}
+    isAdmin={session?.user?.role === 'admin' || false} />
   )
 }
 
