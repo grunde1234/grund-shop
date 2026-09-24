@@ -242,7 +242,7 @@ const OrderDetailsTable = ({
 
               {
                 !isPaid && paymentMethod === 'Stripe' && stripeClientSecret &&(
-                  <StripePayment priceInCents={Math.round(Number(totalPrice) * 100)} orderId={id} client_secret={stripeClientSecret} />
+                  <StripePayment priceInCents={Math.round(Number(totalPrice) * 100)} orderId={id} clientSecret={stripeClientSecret} />
                 )
               }
 

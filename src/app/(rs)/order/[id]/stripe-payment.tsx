@@ -1,3 +1,4 @@
+"use client"
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -20,8 +21,7 @@ type props = {
 
 const StripePayment = ({ priceInCents, orderId, clientSecret }: props) => {
   const stripePromise = loadStripe(
-    process.env.NEXT_PUPLIC_STRIPE_PUBLISHABLE_KEY as string,
-  );
+process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string  );
   const { theme, systemTheme } = useTheme();
 
   //Stripe Form component
@@ -41,7 +41,7 @@ const StripePayment = ({ priceInCents, orderId, clientSecret }: props) => {
       setIsloading(true);
 
       stripe
-        .confirmPayment({
+        .confirmPayment({//* Reads the payment details from the PaymentElement and confirms the payment with Stripe before redirecting the user to the return_url.
           elements,
           confirmParams: {
             return_url: `${SERVER_URL}/order/${orderId}/stripe-payment-success`,
@@ -64,7 +64,7 @@ const StripePayment = ({ priceInCents, orderId, clientSecret }: props) => {
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="text-xl">Stripe Checkout</div>
         {errorMessage && <div className="text-destructive">{errorMessage}</div>}
-        <PaymentElement />
+        <PaymentElement />{/* This is an element that allows the user to enter their payment details */}
         <div>
           <LinkAuthenticationElement
             onChange={(e) => setEmail(e.value.email)}
