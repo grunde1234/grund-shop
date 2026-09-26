@@ -14,15 +14,69 @@ import {
 } from "@react-email/components";
 import { Order } from "@/Zod-schemas";
 import { formatCurrency } from "@/lib/utils";
+import sampleData from "../sample-data";
+import { randomUUID } from "node:crypto";
+// use randomUUID() instead of crypto.randomUUID()
+require('dotenv').config();
+
+
+PurchaseReceiptEmail.PreviewProps = {
+  order: {
+    id: randomUUID(),
+    userId: '123',
+    user:{
+        name: 'John doe',
+        email: 'test@example.com'
+    },
+    paymentMethod: 'Stripe',
+    shippingAddress: {
+    fullName: 'John Doe',
+    streetAddress: '123 Main street',
+    city: 'New york',
+    postalCode: '111111',
+    country: 'Nigeria'
+    },
+    createdAt: new Date(),
+    totalPrice: '20',
+    shippingPrice: '30',
+    taxPrice: '40',
+    itemsPrice: '50',
+    orderitems: sampleData.products.map((x)=>({
+        name: x.name,
+        orderId: '123',
+        productId: '124',
+        slug: x.slug,
+        qty: x.stock,
+        image: x.images[0],
+        price: x.price.toString()
+    })),
+    isDelivered: true,
+    deliveredAt: new Date(),
+    isPaid: true,
+    paidAt: new Date(),
+    paymentResult: {
+        name: '',
+        id: '123',
+        status: 'succeded',
+        pricePaid: '100',
+        email_address: 'test@example.com'
+    }
+  }
+} satisfies order;
 
 const dateFormater = new Intl.DateTimeFormat("en", { dateStyle: "medium" });
 
-const PurchaseReceipt = ({ order }: { order: Order }) => {
+console.log("SERVER URL:", process.env.NEXT_PUBLIC_SERVER_URL);
+
+type order = {
+    order: Order
+}
+
+export default function PurchaseReceiptEmail({ order }: order) {
   return (
     <Html>
       <Preview>View order receipt</Preview>
       <Tailwind>
-        <Head>
           <Body className="font-sans bg-white">
             <Container className="max-w-xl">
               <Heading>Purchase Receipt</Heading>
@@ -98,10 +152,7 @@ const PurchaseReceipt = ({ order }: { order: Order }) => {
               </Section>
             </Container>
           </Body>
-        </Head>
       </Tailwind>
     </Html>
   );
 };
-
-export default PurchaseReceipt;
