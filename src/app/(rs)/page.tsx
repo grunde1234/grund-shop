@@ -4,6 +4,7 @@ import ProductList from '@/components/shared/product/product-list'
 import { getLatestProducts, getFeaturedProducts } from '@/lib/actions/product.actions'
 import ProductCarousel from '@/components/shared/product/product-carousel'
 import ViewAllProductsButton from '@/components/view-all-products-button'
+import IconBox from '@/components/icon-box'
 
 export const metadata = {
   title: "Home",
@@ -19,6 +20,7 @@ export const metadata = {
   {featureProducts.length > 0 && <ProductCarousel data={featureProducts}/>}
    <ProductList data={latestProducts} title='newest'/>
    <ViewAllProductsButton />
+    <IconBox />
   </>
 }
 
