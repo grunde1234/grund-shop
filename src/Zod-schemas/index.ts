@@ -39,12 +39,13 @@ export type Order = z.infer<typeof insertOrderSchema>  & {
     isDelivered: boolean;
     deliveredAt: Date | null;
     orderitems: OrderItem[];
+    shippingAddress: ShippingAddress; 
     user: {
        /*  id: string; */
         name: string;
         email: string;
     };
-    paymentResult: PaymentResult
+    paymentResult: PaymentResult,
 }
 
 export type PaymentResult = z.infer<typeof paymentResultSchema>;

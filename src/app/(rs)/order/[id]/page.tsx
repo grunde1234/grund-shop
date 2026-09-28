@@ -6,7 +6,7 @@ export const metadata = {
 import { getOrderById } from "@/lib/actions/order.action"
 import { notFound } from "next/navigation"
 import OrderDetailsTable from './order-details-table'
-import { ShippingAddress } from "@/Zod-schemas"
+import { PaymentResult, ShippingAddress } from "@/Zod-schemas"
 import { auth } from "../../../../../auth"
 import Stripe from "stripe"
 
@@ -48,7 +48,8 @@ const OrderDetailsPage = async(props: {
         shippingPrice: order.shippingPrice.toString(),
         taxPrice: order.taxPrice.toString(),
         totalPrice: order.totalPrice.toString(),
-        shippingAddress: order.shippingAddress as ShippingAddress
+        shippingAddress: order.shippingAddress as ShippingAddress,
+        paymentResult: order.PaymentResult as PaymentResult
     }} 
     stripeClientSecret={client_secret}
     PaypalClientId={process.env.PAYPAL_CLIENT_ID || 'sb'}

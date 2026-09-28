@@ -7,9 +7,10 @@ import { auth } from "../../../auth";
 import { getMyCart } from "./cart.action";
 import { getUserById } from "./user.actions";
 import { insertOrderSchema } from "../validators";
-import { CartItem, PaymentResult } from "@/Zod-schemas";
+import { CartItem, Order, PaymentResult, ShippingAddress } from "@/Zod-schemas";
 import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
+import {sendPurchaseReceipt}  from "../../../email";
 /* import { JsonArray } from "@prisma/client/runtime/library";
 import { JsonValue } from "@/generated/prisma/runtime/library";
  */
@@ -242,6 +243,18 @@ export async function updateOrderToPaid({
   });
 
   if (!updatedOrder) throw new Error("Order not found");
+
+  sendPurchaseReceipt({
+  order: {
+    ...updatedOrder,
+    shippingAddress: updatedOrder.shippingAddress as ShippingAddress,
+    paymentResult: updatedOrder.PaymentResult as PaymentResult,
+    itemsPrice: updatedOrder.itemsPrice.toString(),
+    shippingPrice: updatedOrder.ShippingPrice.toString(),
+    taxPrice: updatedOrder.taxPrice.toString(),
+    totalPrice: updatedOrder.totalPrice.toString(),
+  } as Order,
+});
 }
 
 //* Get all orders for a user with pagination

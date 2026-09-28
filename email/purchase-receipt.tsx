@@ -20,7 +20,7 @@ import { randomUUID } from "node:crypto";
 require('dotenv').config();
 
 
-PurchaseReceiptEmail.PreviewProps = {
+/* PurchaseReceiptEmail.PreviewProps = {
   order: {
     id: randomUUID(),
     userId: '123',
@@ -62,17 +62,14 @@ PurchaseReceiptEmail.PreviewProps = {
         email_address: 'test@example.com'
     }
   }
-} satisfies order;
+} satisfies order; */
 
 const dateFormater = new Intl.DateTimeFormat("en", { dateStyle: "medium" });
 
 console.log("SERVER URL:", process.env.NEXT_PUBLIC_SERVER_URL);
 
-type order = {
-    order: Order
-}
 
-export default function PurchaseReceiptEmail({ order }: order) {
+export const PurchaseReceiptEmail = ({ order }: { order: Order }) => {
   return (
     <Html>
       <Preview>View order receipt</Preview>
@@ -156,3 +153,5 @@ export default function PurchaseReceiptEmail({ order }: order) {
     </Html>
   );
 };
+
+export default PurchaseReceiptEmail;

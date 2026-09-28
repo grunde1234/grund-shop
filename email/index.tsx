@@ -6,12 +6,10 @@ require('dotenv').config();
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
-type order = {
-    order: Order
-}
-const sendPurchaseReceipt = async({order}: order) => {
+
+export const sendPurchaseReceipt = async({order}: { order: Order }) => {
   await resend.emails.send({
-    from: `{APP_NAME} <${SENDER_EMAIL}>`,
+    from: `${APP_NAME} <${SENDER_EMAIL}>`,
     to:  order.user.email,
     subject: `Order Comfirmation ${order.id}`,
     react: <PurchaseReceiptEmail order={order} />
