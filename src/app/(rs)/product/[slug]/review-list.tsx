@@ -4,11 +4,18 @@ import { Review } from "@/Zod-schemas";
 import Link from "next/link";
 import ReviewForm from "./review-form";
 import { getReviews } from "@/lib/actions/review.actions";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Calendar, User } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import Rating from "@/components/shared/product/rating";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 type props = {
   userId: string;
@@ -19,32 +26,41 @@ type props = {
 const ReviewList = ({ userId, productId, productSlug }: props) => {
   //console.log(userId, productId, productSlug);
 
+  const [isLoading, setIsLoading] = useState(true);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const router = useRouter()
+  const router = useRouter();
 
-  useEffect(()=>{
-    const loadReviews = async()=>{
-      const res = await getReviews({productId});
+  useEffect(() => {
+    const loadReviews = async () => {
+      const res = await getReviews({ productId });
 
       setReviews(res.data);
-
-    }
+      setIsLoading(false);
+    };
 
     loadReviews();
-  },[productId])
+  }, [productId]);
   /* RELOAD AFTER CREATE OR UPDATE */
-  const reload = async () =>{
-    const res = await getReviews({productId});
+  const reload = async () => {
+    const res = await getReviews({ productId });
     setReviews([...res.data]);
     router.refresh();
-  }
+  };
   return (
     <div className="space-y-4">
-      {reviews.length === 0 && <div>No reviews yet</div>}
+      {isLoading ? (
+        <Loader2 className="animate-spin h-5 w-5 text-gray-500" />
+      ) : reviews.length === 0 ? (
+        <div>No reviews yet</div>
+      ) : null}
       {userId ? (
         <>
-        {/* REVIEW FORM */}
-        <ReviewForm userId={userId} productId={productId} onReviewSubmitted={reload} />
+          {/* REVIEW FORM */}
+          <ReviewForm
+            userId={userId}
+            productId={productId}
+            onReviewSubmitted={reload}
+          />
         </>
       ) : (
         <div>
@@ -60,25 +76,21 @@ const ReviewList = ({ userId, productId, productSlug }: props) => {
       )}
       <div className="flex flex-col gap-3">
         {/* Reviews here */}
-        {reviews.map((r)=>(
+        {reviews.map((r) => (
           <Card key={r.id}>
             <CardHeader>
               <div className="flex-between">
-                <CardTitle>
-                  {r.title}
-                </CardTitle>
+                <CardTitle>{r.title}</CardTitle>
               </div>
-              <CardDescription>
-                {r.description}
-              </CardDescription>
+              <CardDescription>{r.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex space-x-4 text-sm text-muted-foreground">
                 {/* RATING */}
-                <Rating value={r.rating}/>
+                <Rating value={r.rating} />
                 <div className="flex item-center">
                   <User className="mr-1 h-3 w-3" />
-                  {r.user ? r.user.name : 'User'}
+                  {r.user ? r.user.name : "User"}
                 </div>
                 <div className="flex items-center">
                   <Calendar className="mr-3 h-3 w-3" />
@@ -88,9 +100,11 @@ const ReviewList = ({ userId, productId, productSlug }: props) => {
             </CardContent>
           </Card>
         ))}
-        </div>
+      </div>
     </div>
   );
 };
 
 export default ReviewList;
+
+/* The side effect fetches the initial reviews before the data is available */
